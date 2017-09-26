@@ -2,7 +2,6 @@ CREATE TABLE IF NOT EXISTS `intra_enkel_ronde` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `naam` varchar(32) NOT NULL,
   `einddatum` DATE NOT NULL,
-  `seizoen_id` int(11) NOT NULL,
   `aangemaakt` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -24,13 +23,13 @@ CREATE TABLE IF NOT EXISTS `intra_enkel_poule_spelers` (
 CREATE TABLE IF NOT EXISTS `intra_enkel_wedstrijd` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `poule_id` int(11) NOT NULL,
-  `spelerThuis` int(11) NOT NULL,
+  `spelerThuis_id` int(11) NOT NULL,
   `spelerThuis_handicap` int(11) NOT NULL,
   `spelerThuis_set1` int(11) NOT NULL,
   `spelerThuis_set2` int(11) NOT NULL,
   `spelerThuis_set3` int(11) NOT NULL,
   `spelerThuis_punten` int(11) NOT NULL,
-  `spelerUit` int(11) NOT NULL,
+  `spelerUit_id` int(11) NOT NULL,
   `spelerUit_handicap` int(11) NOT NULL,
   `spelerUit_set1` int(11) NOT NULL,
   `spelerUit_set2` int(11) NOT NULL,
@@ -46,8 +45,8 @@ CREATE TABLE IF NOT EXISTS `intra_enkel_wedstrijd` (
 
 ALTER TABLE `intra_enkel_wedstrijd`
 	ADD CONSTRAINT `uitslagenPouleFK` FOREIGN KEY (`poule_id`) REFERENCES `intra_enkel_poule` (`id`) ON DELETE NO ACTION,
-	ADD CONSTRAINT `spelerThuisFK` FOREIGN KEY (`spelerThuis`) REFERENCES `intra_spelers` (`id`) ON DELETE NO ACTION,
-	ADD CONSTRAINT `spelerUitFK` FOREIGN KEY (`spelerUit`) REFERENCES `intra_spelers` (`id`) ON DELETE NO ACTION;
+	ADD CONSTRAINT `spelerThuisFK` FOREIGN KEY (`spelerThuis_id`) REFERENCES `intra_spelers` (`id`) ON DELETE NO ACTION,
+	ADD CONSTRAINT `spelerUitFK` FOREIGN KEY (`spelerUit_id`) REFERENCES `intra_spelers` (`id`) ON DELETE NO ACTION;
 	
 ALTER TABLE `intra_enkel_poule_spelers`
 		ADD CONSTRAINT `pouleFK` FOREIGN KEY (`poule_id`) REFERENCES `intra_enkel_poule` (`id`) ON DELETE NO ACTION,
@@ -56,7 +55,5 @@ ALTER TABLE `intra_enkel_poule_spelers`
 ALTER TABLE `intra_enkel_poule`
 		ADD CONSTRAINT `rondeFK` FOREIGN KEY (`ronde_id`) REFERENCES `intra_enkel_ronde` (`id`) ON DELETE NO ACTION;
 
-ALTER TABLE `intra_enkel_ronde`
-		ADD CONSTRAINT `seizoenFK` FOREIGN KEY (`seizoen_id`) REFERENCES `intra_seizoen` (`id`) ON DELETE NO ACTION;
 		
 		

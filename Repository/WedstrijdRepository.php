@@ -8,7 +8,7 @@ class WedstrijdRepository
     function __construct()
     {
         $this->db = new ConnectionSettings();
-        connect();
+        $this->db->connect();
     }
 
     function __destruct()
@@ -21,16 +21,123 @@ class WedstrijdRepository
     public function get($wedstrijd_id)
     {
         //Haal wedstrijd op en vul de members in
-        $get_query = sprintf("SELECT * FROM intra_enkel_wedstrijd IW WHERE id = '%s';", $this->db->mysqli->real_escape_string($wedstrijd_id));
-        $result = $this->db->mysqli->query($sql);
+        $get_query = sprintf("SELECT id as wedstrijd_id, * FROM intra_enkel_wedstrijd IW WHERE id = '%s';", $this->db->mysqli->real_escape_string($wedstrijd_id));
+        $result = $this->db->mysqli->query($get_query);
         if ($result) {
             // fetch the result row.
             $data = $result->fetch_assoc();
-            $this->vulop($row);
-            return TRUE;
+            $wedstrijd = new Wedstrijd();
+            $wedstrijd->vulOp($row);
+            return true;
         }
-        return FALSE;
+        return false;
+    }
+    public function insert($poule_id, $spelerThuis, $spelerThuis_handicap, $spelerUit, $spelerUit_handicap){
+        $insert_query = sprintf("INSERT INTO intra_enkel_wedstrijd
+            SET
+                'poule_id' = '%s',
+                'spelerThuis' = '%s',
+                'spelerThuis_handicap' = '%s',
+                'spelerUit' = '%s',
+                'spelerUit_handicap' = '%s';",
+            $this->db->mysqli->real_escape_string($poule_id),
+            $this->db->mysqli->real_escape_string($spelerThuis),
+            $this->db->mysqli->real_escape_string($spelerThuis_handicap),
+            $this->db->mysqli->real_escape_string($spelerUit),
+            $this->db->mysqli->real_escape_string($spelerUit_handicap));
+        if( $this->db->mysqli->query($insert_query) === TRUE) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
+    public function vulIn($wedstrijd_id, $spelerThuis_set1, $spelerThuis_set2, $spelerThuis_set3, $spelerThuis_punten, $spelerUit_set1,
+        $spelerUit_set2, $spelerUit_set3, $spelerUit_punten){
+        
+        $update_query = sprintf("UPDATE intra_enkel_wedstrijd
+            SET                
+                'spelerThuis_set1' = '%s',
+                'spelerThuis_set2' = '%s',
+                'spelerThuis_set3' = '%s',
+                'spelerThuis_punten' = '%s',
+                'spelerUit_set1' = '%s',
+                'spelerUit_set2' = '%s',
+                'spelerUit_set3' = '%s',
+                'spelerUit_punten' = '%s',
+                'ingevuld_door' = '%s',
+                'ingevuld' = '1'
+            WHERE 'wedstrijd_id' = '%s';",            
+            $this->db->mysqli->real_escape_string($spelerThuis_set1),
+            $this->db->mysqli->real_escape_string($spelerThuis_set2),
+            $this->db->mysqli->real_escape_string($spelerThuis_set3),
+            $this->db->mysqli->real_escape_string($spelerThuis_punten),
+            $this->db->mysqli->real_escape_string($spelerUit_set1),
+            $this->db->mysqli->real_escape_string($spelerUit_set2),
+            $this->db->mysqli->real_escape_string($spelerUit_set3),
+            $this->db->mysqli->real_escape_string($spelerUit_punten),
+            $this->db->mysqli->real_escape_string($ingevuld_door),
+            $this->db->mysqli->real_escape_string($ingevuld),
+            $this->db->mysqli->real_escape_string($wedstrijd_id));
+        if( $this->db->mysqli->query($update_query) === TRUE) {
+            return true;
+        } else {
+            return false;
+        }   
+
+
+    }
+
+    public function getBySpelerAndSeizoen($speler_id, $seizoen_id){
+        $select_query = sprintf("SELECT r.id AS ronde_id, r.naam AS ronde_naam, w.id as wedstrijd_id, w.*, 
+            s1.naam AS spelerThuis_naam, s1.voornaam AS spelerThuis_voornaam, s2.naam AS spelerUit_naam, s2.voornaam AS spelerUit_voornaam
+            FROM intra_enkel_wedstrijd w
+            INNER JOIN intra_enkel_poule p on p.id = w.poule_id
+            INNER JOIN intra_enkel_ronde r on r.id = p.ronde_id
+            INNER JOIN intra_spelers s1 ON s1.id = w.spelerThuis
+            INNER JOIN intra_spelers s2 ON s2.id = w.spelerUit
+            WHERE (s1.id = '%s' OR s2.id = '%s') AND r.seizoen_id = '%s' ;",
+            $this->db->mysqli->real_escape_string($speler_id),
+            $this->db->mysqli->real_escape_string($speler_id),
+            $this->db->mysqli->real_escape_string($seizoen_id));
+        $result = $this->db->mysqli->query($query);
+        $wedstrijden = [];
+        while($row = $result->fetch_array())
+        {            
+            $wedstrijd = new Wedstrijd();
+            $wedstrijd->vulOp($row);
+            //Optionele velden invullen
+            $wedstrijd->ronde_id = $row->ronde_id;
+            $wedstrijd->ronde_naam = $row->ronde_naam;
+            
+            $wedstrijden[$wedstrijd->id] = $wedstrijd;
+        }
+    }
+
+    //Haal Ronde op + vul in bij poule object
+    public function getByRondeId($ronde_id, $poules){
+        //TODO: toevoegen van handicap per speler per wedstrijd
+        $select_query = sprintf("SELECT p.id AS poule_id, p.naam AS naam, w.id as wedstrijd_id, w.*, 
+        s1.naam AS spelerThuis_naam, s1.voornaam AS spelerThuis_voornaam, s2.naam AS spelerUit_naam, s2.voornaam AS spelerUit_voornaam
+        FROM intra_enkel_poule as p
+        INNER JOIN intra_enkel_wedstrijd w ON w.poule_id = p.id
+        INNER JOIN intra_spelers s1 ON s1.id = w.spelerThuis
+        INNER JOIN intra_spelers s2 ON s2.id = w.spelerUit
+        WHERE p.ronde_id = '%s';",
+        $this->db->mysqli->real_escape_string($ronde_id));
+        $result = $this->db->mysqli->query($select_query);
+        while($row = $result->fetch_array())
+        {            
+            if(!isset($poules[$row->poule_id])){
+                //Hier zouden we niet mogen inkomen-> alles uit basisinfo
+                $poules[$row->poule_id] = new Poule();
+                $poules[$row->poule_id]->vulOp($row);
+            }
+            $wedstrijd = new Wedstrijd();
+            $wedstrijd->vulOp($row);
+            $poules[$row->poule_id]->wedstrijden[$wedstrijd->id] = $wedstrijd;
+        }
+        return $poules;
+    }
 
 }
