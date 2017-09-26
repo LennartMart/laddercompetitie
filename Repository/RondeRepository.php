@@ -14,7 +14,35 @@ class RondeRepository
     {
         $this->db->close();
     }
+
+    public function checkIfRondeIsAlreadyGenerated($ronde_id){
+        //Haal wedstrijd op en vul de members in
+        $get_query = sprintf("SELECT id as ronde_id, * FROM intra_enkel_ronde WHERE id = '%s';", 
+        $this->db->mysqli->real_escape_string($ronde_id));
+        $result = $this->db->mysqli->query($get_query);
+        if ($result) {
+            // fetch the result row.
+            $data = $result->fetch_assoc();
+            return $data['aangemaakt'];
+        }
+        return true;
+    }
     
+    public function insert($naam, $einddatum){
+        $insert_query = sprintf("INSERT INTO intra_enkel_ronde
+            SET
+                'einddatum' = '%s',
+                'naam' = '%s',
+                'aangemaakt' = '0',
+                'startdatum' = NOW();",
+            $this->db->mysqli->real_escape_string($einddatum),
+            $this->db->mysqli->real_escape_string($naam));
+        if( $this->db->mysqli->query($insert_query) === TRUE) {
+            return true;
+        } else {
+            return false;
+        }
+    }
     public function getHuidigeRonde(){        
         $get_query = "SELECT TOP 1 id as ronde_id, * FROM intra_enkel_ronde ORDER BY id DESC;";
         $result = $this->db->mysqli->query($get_query);

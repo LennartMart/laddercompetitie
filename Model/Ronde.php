@@ -5,6 +5,7 @@ class Ronde
     public $naam;
     public $einddatum;
     public $aangemaakt;
+    public $startdatum;
     public $poules;
 
     public function vulOp($data){
@@ -12,6 +13,7 @@ class Ronde
         $this->naam = $data['naam'];
         $this->einddatum = $data['einddatum'];
         $this->aangemaakt = $data['aangemaakt'];
+        $this->startdatum = $data['startdatum'];
         $this->poules = [];
     }
 }

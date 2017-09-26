@@ -32,18 +32,18 @@ class WedstrijdRepository
         }
         return false;
     }
-    public function insert($poule_id, $spelerThuis, $spelerThuis_handicap, $spelerUit, $spelerUit_handicap){
+    public function insert($poule_id, $spelerThuis_id, $spelerThuis_handicap, $spelerUit_id, $spelerUit_handicap){
         $insert_query = sprintf("INSERT INTO intra_enkel_wedstrijd
             SET
                 'poule_id' = '%s',
-                'spelerThuis' = '%s',
+                'spelerThuis_id' = '%s',
                 'spelerThuis_handicap' = '%s',
-                'spelerUit' = '%s',
+                'spelerUit_id' = '%s',
                 'spelerUit_handicap' = '%s';",
             $this->db->mysqli->real_escape_string($poule_id),
-            $this->db->mysqli->real_escape_string($spelerThuis),
+            $this->db->mysqli->real_escape_string($spelerThuis_id),
             $this->db->mysqli->real_escape_string($spelerThuis_handicap),
-            $this->db->mysqli->real_escape_string($spelerUit),
+            $this->db->mysqli->real_escape_string($spelerUit_id),
             $this->db->mysqli->real_escape_string($spelerUit_handicap));
         if( $this->db->mysqli->query($insert_query) === TRUE) {
             return true;

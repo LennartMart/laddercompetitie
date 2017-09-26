@@ -2,6 +2,7 @@ CREATE TABLE IF NOT EXISTS `intra_enkel_ronde` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `naam` varchar(32) NOT NULL,
   `einddatum` DATE NOT NULL,
+  `startdatum` DATE NOT NULL,  
   `aangemaakt` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
