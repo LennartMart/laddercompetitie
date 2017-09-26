@@ -1,5 +1,8 @@
 <?php
 require_once(__DIR__ . '/../Repository/PouleRepository.php');
+require_once(__DIR__ . '/../Repository/WedstrijdRepository.php');
+require_once(__DIR__ . '/../Repository/SpelerRepository.php');
+require_once(__DIR__ . '/../Repository/RondeRepository.php');
 class RondeManager {
 
     private $_pouleRepository;

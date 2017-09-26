@@ -53,7 +53,7 @@ class WedstrijdRepository
     }
 
     public function vulIn($wedstrijd_id, $spelerThuis_set1, $spelerThuis_set2, $spelerThuis_set3, $spelerThuis_punten, $spelerUit_set1,
-        $spelerUit_set2, $spelerUit_set3, $spelerUit_punten){
+        $spelerUit_set2, $spelerUit_set3, $spelerUit_punten, $ingevuld_door){
         
         $update_query = sprintf("UPDATE intra_enkel_wedstrijd
             SET                
@@ -77,7 +77,6 @@ class WedstrijdRepository
             $this->db->mysqli->real_escape_string($spelerUit_set3),
             $this->db->mysqli->real_escape_string($spelerUit_punten),
             $this->db->mysqli->real_escape_string($ingevuld_door),
-            $this->db->mysqli->real_escape_string($ingevuld),
             $this->db->mysqli->real_escape_string($wedstrijd_id));
         if( $this->db->mysqli->query($update_query) === TRUE) {
             return true;
