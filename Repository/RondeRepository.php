@@ -31,10 +31,10 @@ class RondeRepository
     public function insert($naam, $einddatum){
         $insert_query = sprintf("INSERT INTO intra_enkel_ronde
             SET
-                'einddatum' = '%s',
-                'naam' = '%s',
-                'aangemaakt' = '0',
-                'startdatum' = NOW();",
+                einddatum = '%s',
+                naam = '%s',
+                aangemaakt = '0',
+                startdatum = NOW();",
             $this->db->mysqli->real_escape_string($einddatum),
             $this->db->mysqli->real_escape_string($naam));
         if( $this->db->mysqli->query($insert_query) === TRUE) {
@@ -43,14 +43,14 @@ class RondeRepository
             return false;
         }
     }
-    public function getHuidigeRonde(){        
-        $get_query = "SELECT TOP 1 id as ronde_id, * FROM intra_enkel_ronde ORDER BY id DESC;";
+    public function getHuidigeRonde(){    
+        $get_query = "SELECT id as ronde_id, r.* FROM intra_enkel_ronde r ORDER BY id DESC LIMIT 1";
         $result = $this->db->mysqli->query($get_query);
         if ($result) {
             // fetch the result row.
             $data = $result->fetch_assoc();
             $ronde = new Ronde();
-            $ronde->vulOp($row);
+            $ronde->vulOp($data);
             return $ronde;
         }
         return new Ronde();

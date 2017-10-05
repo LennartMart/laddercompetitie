@@ -25,6 +25,15 @@
                     $data["success"] = false;
                     $data["errors"] = "Geen ronde meegegeven!";
                     echo json_encode($data);                    
-                }                
+                }
+                break;
+            //Tested
+            case 'getRondes':
+                $rondeManager = new RondeManager();
+                $rondes = $rondeManager->getRondes();
+                $data["success"] = true;
+                $data["rondes"] = $rondes;
+                echo json_encode($data); 
+                break;
         }
     }

@@ -43,7 +43,7 @@ class SpelerRepository
         {
             $speler = new Speler();
             $speler->vulOp($row);
-            $poules[$row->poule_id]->spelers[$speler->id] = $speler;
+            $poules[$row["poule_id"]]->spelers[$speler->id] = $speler;
         }
         return $poules;
     }

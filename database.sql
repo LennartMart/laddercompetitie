@@ -40,8 +40,8 @@ CREATE TABLE IF NOT EXISTS `intra_enkel_wedstrijd` (
   `ingevuld` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `poule_id` (`poule_id`),
-  KEY `spelerThuis` (`spelerThuis`),
-  KEY `spelerUit` (`spelerUit`)
+  KEY `spelerThuis` (`spelerThuis_id`),
+  KEY `spelerUit` (`spelerUit_id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8;
 
 ALTER TABLE `intra_enkel_wedstrijd`

@@ -120,8 +120,8 @@ class WedstrijdRepository
         s1.naam AS spelerThuis_naam, s1.voornaam AS spelerThuis_voornaam, s2.naam AS spelerUit_naam, s2.voornaam AS spelerUit_voornaam
         FROM intra_enkel_poule as p
         INNER JOIN intra_enkel_wedstrijd w ON w.poule_id = p.id
-        INNER JOIN intra_spelers s1 ON s1.id = w.spelerThuis
-        INNER JOIN intra_spelers s2 ON s2.id = w.spelerUit
+        INNER JOIN intra_spelers s1 ON s1.id = w.spelerThuis_id
+        INNER JOIN intra_spelers s2 ON s2.id = w.spelerUit_id
         WHERE p.ronde_id = '%s';",
         $this->db->mysqli->real_escape_string($ronde_id));
         $result = $this->db->mysqli->query($select_query);

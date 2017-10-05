@@ -53,6 +53,9 @@ class RondeManager {
         }
     }
 
+    public function getRondes(){
+        return $this->_rondeRepository->getRondes();
+    }
     public function getRanking($ronde_id){
 
         $poules = $this->_pouleRepository->getByRondeId($ronde_id);
@@ -63,9 +66,9 @@ class RondeManager {
 
         //Bereken de statistieken
         $ranking = [];
-        for ($i=0; $i < count($poules); $i++) { 
-            $poule = $poules[$i];
-            $this->calculateStats($poule);
+        
+        foreach ($poules as $poule) {
+            $poule = $this->calculateStats($poule);
             $ranking[] = $poule;
         }
         return $ranking;
@@ -84,20 +87,23 @@ class RondeManager {
     private function calculateHandicapSpeler($speler){
         $handicap = 0;
         switch ($speler->klassement) {
+            case "Recreant":
+                $handicap = 0;
+                break;
             case "D":
-                $handicap = 1;
+                $handicap = 6;
                 break;
             case "C2":
-                $handicap = 2;
+                $handicap = 8;
                 break;
             case "C1":
-                $handicap = 4;
+                $handicap = 10;
                 break;
             case "B2":
-                $handicap = 7;
+                $handicap = 12;
                 break;
             case "B1":
-                $handicap = 11;
+                $handicap = 14;
                 break;
             case "A":
                 $handicap = 16;
@@ -110,23 +116,26 @@ class RondeManager {
         return $handicap;
     }
     private function calculateStats($poule){
-       foreach ($poule->wedstrijden as $wedstrijd) {
-           if($wedstrijd->ingevuld){
-                $poule->spelers[$wedstrijd->spelerThuis_id]->matchen_gespeeld++;
-                $poule->spelers[$wedstrijd->spelerThuis_id]->punten += $wedstrijd->spelerThuis_punten;
+        if(is_array($poule->wedstrijden)){
+            foreach ($poule->wedstrijden as $wedstrijd) {
+                if($wedstrijd->ingevuld){
+                        $poule->spelers[$wedstrijd->spelerThuis_id]->matchen_gespeeld++;
+                        $poule->spelers[$wedstrijd->spelerThuis_id]->punten += $wedstrijd->spelerThuis_punten;
 
-                $poule->spelers[$wedstrijd->spelerUit_id]->matchen_gespeeld++;
-                $poule->spelers[$wedstrijd->spelerUit_id]->punten += $wedstrijd->spelerUit_punten;    
+                        $poule->spelers[$wedstrijd->spelerUit_id]->matchen_gespeeld++;
+                        $poule->spelers[$wedstrijd->spelerUit_id]->punten += $wedstrijd->spelerUit_punten;    
 
-                if($poule->spelers[$wedstrijd->spelerThuis_id]->punten > $poule->spelers[$wedstrijd->spelerUit_id]->punten){
-                    $poule->spelers[$wedstrijd->spelerUit_id]->matchen_verloren++;
-                    $poule->spelers[$wedstrijd->spelerThuis_id]->matchen_gewonnen++;
-                } else {
-                    $poule->spelers[$wedstrijd->spelerThuis_id]->matchen_verloren++;
-                    $poule->spelers[$wedstrijd->spelerUit_id]->matchen_gewonnen++;                
+                        if($poule->spelers[$wedstrijd->spelerThuis_id]->punten > $poule->spelers[$wedstrijd->spelerUit_id]->punten){
+                            $poule->spelers[$wedstrijd->spelerUit_id]->matchen_verloren++;
+                            $poule->spelers[$wedstrijd->spelerThuis_id]->matchen_gewonnen++;
+                        } else {
+                            $poule->spelers[$wedstrijd->spelerThuis_id]->matchen_verloren++;
+                            $poule->spelers[$wedstrijd->spelerUit_id]->matchen_gewonnen++;                
+                        }
                 }
-           }
+            }
         }
+        return $poule;
     }    
 
     private function combinatieZoeker($array, $data, $start, $end, $index, &$output){
