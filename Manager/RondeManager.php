@@ -73,9 +73,11 @@ class RondeManager {
 
         //Bereken de statistieken
         $ranking = [];
-        
         foreach ($poules as $poule) {
             $poule = $this->calculateStats($poule);
+            //verwijderen van assoc array => kendo kan hier niet mee overweg.
+            //Waarom assoc array? => calculate stats!
+            $poule->spelers = array_values($poule->spelers);
             $ranking[] = $poule;
         }
         return $ranking;
@@ -129,8 +131,22 @@ class RondeManager {
                         $poule->spelers[$wedstrijd->spelerThuis_id]->matchen_gespeeld++;
                         $poule->spelers[$wedstrijd->spelerThuis_id]->punten += $wedstrijd->spelerThuis_punten;
 
+                        $poule->spelers[$wedstrijd->spelerThuis_id]->punten_gewonnen += $wedstrijd->spelerThuis_set1;
+                        $poule->spelers[$wedstrijd->spelerThuis_id]->punten_gewonnen += $wedstrijd->spelerThuis_set2;
+                        $poule->spelers[$wedstrijd->spelerThuis_id]->punten_gewonnen += $wedstrijd->spelerThuis_set3;
+                        $poule->spelers[$wedstrijd->spelerThuis_id]->punten_verloren += $wedstrijd->spelerUit_set1;
+                        $poule->spelers[$wedstrijd->spelerThuis_id]->punten_verloren += $wedstrijd->spelerUit_set2;
+                        $poule->spelers[$wedstrijd->spelerThuis_id]->punten_verloren += $wedstrijd->spelerUit_set3;
+
                         $poule->spelers[$wedstrijd->spelerUit_id]->matchen_gespeeld++;
-                        $poule->spelers[$wedstrijd->spelerUit_id]->punten += $wedstrijd->spelerUit_punten;    
+                        $poule->spelers[$wedstrijd->spelerUit_id]->punten += $wedstrijd->spelerUit_punten;
+
+                        $poule->spelers[$wedstrijd->spelerUit_id]->punten_gewonnen += $wedstrijd->spelerUit_set1;
+                        $poule->spelers[$wedstrijd->spelerUit_id]->punten_gewonnen += $wedstrijd->spelerUit_set2;
+                        $poule->spelers[$wedstrijd->spelerUit_id]->punten_gewonnen += $wedstrijd->spelerUit_set3;
+                        $poule->spelers[$wedstrijd->spelerUit_id]->punten_verloren += $wedstrijd->spelerThuis_set1;
+                        $poule->spelers[$wedstrijd->spelerUit_id]->punten_verloren += $wedstrijd->spelerThuis_set2;
+                        $poule->spelers[$wedstrijd->spelerUit_id]->punten_verloren += $wedstrijd->spelerThuis_set3;
 
                         if($poule->spelers[$wedstrijd->spelerThuis_id]->punten > $poule->spelers[$wedstrijd->spelerUit_id]->punten){
                             $poule->spelers[$wedstrijd->spelerUit_id]->matchen_verloren++;

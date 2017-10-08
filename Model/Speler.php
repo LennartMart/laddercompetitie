@@ -30,6 +30,8 @@ class Speler
         $this->matchen_gespeeld = 0;
         $this->matchen_verloren = 0;
         $this->matchen_gewonnen = 0;
+        $this->punten_gewonnen = 0;
+        $this->punten_verloren = 0;
         $this->punten = 0;
         $this->wedstrijden = [];
     }

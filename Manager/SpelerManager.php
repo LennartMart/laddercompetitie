@@ -32,12 +32,26 @@ class SpelerManager {
             if($wedstrijd->ingevuld){
                 $speler->matchen_gespeeld++;
                 if($wedstrijd->spelerThuis_id == $speler->id){
+                    $speler->punten_gewonnen += $wedstrijd->spelerThuis_set1;
+                    $speler->punten_gewonnen += $wedstrijd->spelerThuis_set2;
+                    $speler->punten_gewonnen += $wedstrijd->spelerThuis_set3;
+                    $speler->punten_verloren += $wedstrijd->spelerUit_set1;
+                    $speler->punten_verloren += $wedstrijd->spelerUit_set2;
+                    $speler->punten_verloren += $wedstrijd->spelerUit_set3;
+
                     if($wedstrijd->spelerThuis_punten > $wedstrijd->spelerUit_punten){
                         $speler->matchen_gewonnen++;
                     } else {
                         $speler->matchen_verloren++;
                     }
                 } else {
+                    $speler->punten_gewonnen += $wedstrijd->spelerUit_set1;
+                    $speler->punten_gewonnen += $wedstrijd->spelerUit_set2;
+                    $speler->punten_gewonnen += $wedstrijd->spelerUit_set3;
+                    $speler->punten_verloren += $wedstrijd->spelerThuis_set1;
+                    $speler->punten_verloren += $wedstrijd->spelerThuis_set2;
+                    $speler->punten_verloren += $wedstrijd->spelerThuis_set3;
+
                     if($wedstrijd->spelerThuis_punten > $wedstrijd->spelerUit_punten){
                         $speler->matchen_verloren++;
                     } else {

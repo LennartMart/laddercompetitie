@@ -127,14 +127,9 @@ class WedstrijdRepository
         $result = $this->db->mysqli->query($select_query);
         while($row = $result->fetch_array())
         {            
-            if(!isset($poules[$row->poule_id])){
-                //Hier zouden we niet mogen inkomen-> alles uit basisinfo
-                $poules[$row->poule_id] = new Poule();
-                $poules[$row->poule_id]->vulOp($row);
-            }
             $wedstrijd = new Wedstrijd();
             $wedstrijd->vulOp($row);
-            $poules[$row["poule_id"]]->wedstrijden[$wedstrijd->id] = $wedstrijd;
+            $poules[$row["poule_id"]]->wedstrijden[] = $wedstrijd;
         }
         return $poules;
     }
