@@ -44,6 +44,22 @@ class PouleRepository
         }
     } 
 
+    public function getById($id){    
+        $select_query = sprintf("SELECT p.id as poule_id, p.*
+            FROM intra_enkel_poule as p
+            WHERE p.id = '%s';",
+            $this->db->mysqli->real_escape_string($id));
+        $result = $this->db->mysqli->query($select_query);
+        if ($result) {
+            // fetch the result row.
+            $data = $result->fetch_assoc();
+            $poule = new Poule();
+            $poule->vulOp($data);
+            return $ronde;
+        }
+        return new Poule();
+    }
+
     public function getByRondeId($ronde_id){
         $select_query = sprintf("SELECT p.id as poule_id, p.*
             FROM intra_enkel_poule as p
@@ -55,12 +71,25 @@ class PouleRepository
         {
             $poule = new Poule();
             $poule->vulOp($row);
-            echo $poule->id;
+            $poules[$poule->id] = $poule;
+        }
+        
+        return $poules;
+    }
+
+    public function getAll(){
+        $select_query = "SELECT p.id as poule_id, p.*
+            FROM intra_enkel_poule as p";
+        $result = $this->db->mysqli->query($select_query);
+        $poules = [];
+        while($row = $result->fetch_array())
+        {
+            $poule = new Poule();
+            $poule->vulOp($row);
             $poules[$poule->id] = $poule;
         }
         return $poules;
     }
-
     public function getPoulesByRondeId($ronde_id){
 
         //Eerst: basisInfo - enkel de poules zelf

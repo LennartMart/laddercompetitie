@@ -15,9 +15,21 @@ class RondeRepository
         $this->db->close();
     }
 
+    public function setGenerated($ronde_id){
+        $update_query = sprintf("UPDATE intra_enkel_ronde
+        SET                
+            aangemaakt = '1'
+        WHERE id = '%s';",            
+        $this->db->mysqli->real_escape_string($ronde_id));
+    if( $this->db->mysqli->query($update_query) === TRUE) {
+        return true;
+    } else {
+        return false;
+    }   
+    }
     public function checkIfRondeIsAlreadyGenerated($ronde_id){
         //Haal wedstrijd op en vul de members in
-        $get_query = sprintf("SELECT id as ronde_id, * FROM intra_enkel_ronde WHERE id = '%s';", 
+        $get_query = sprintf("SELECT id as ronde_id, r.* FROM intra_enkel_ronde r WHERE id = '%s';", 
         $this->db->mysqli->real_escape_string($ronde_id));
         $result = $this->db->mysqli->query($get_query);
         if ($result) {

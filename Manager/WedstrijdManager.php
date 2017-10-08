@@ -13,7 +13,7 @@ class WedstrijdManager {
     }
 
     public function vulIn($wedstrijd_id, $spelerThuis_set1, $spelerThuis_set2, $spelerThuis_set3, $spelerUit_set1,
-        $spelerUit_set2, $spelerUit_set3, $spelerUit_punten, $ingevuld_door){
+        $spelerUit_set2, $spelerUit_set3, $ingevuld_door){
         $errors = Array();
         if($spelerThuis_set1 == "" || $spelerUit_set1 == "")
         {
@@ -47,28 +47,24 @@ class WedstrijdManager {
             $spelerThuis_punten = 0;
             $spelerUit_punten = 0;
             //set per set
-            if($spelerThuis_set1 > $spelerUit_set1) {
-                $spelerThuis_punten++;
-            } else {
-                $spelerUit_punten++;
-            }
-            if($spelerThuis_set2 > $spelerUit_set2) {
-                $spelerThuis_punten++;
-            } else {
-                $spelerUit_punten++;
-            }
+            $this->calculateSetWinnaar($spelerThuis_set1, $spelerUit_set1, $spelerThuis_punten, $spelerUit_punten);
+            $this->calculateSetWinnaar($spelerThuis_set2, $spelerUit_set2, $spelerThuis_punten, $spelerUit_punten);
             if($spelerThuis_set3 != "" && $spelerUit_set3 != "")
             {
-                if($spelerThuis_set3 > $spelerUit_set3) {
-                    $spelerThuis_punten++;
-                } else {
-                    $spelerUit_punten++;
-                }
+                $this->calculateSetWinnaar($spelerThuis_set3, $spelerUit_set3, $spelerThuis_punten, $spelerUit_punten);
             }
             $this->_wedstrijdRepository->vulIn($wedstrijd_id, $spelerThuis_set1, $spelerThuis_set2, $spelerThuis_set3, $spelerThuis_punten, $spelerUit_set1,
                 $spelerUit_set2, $spelerUit_set3, $spelerUit_punten, $ingevuld_door);
         }
         return $errors;
+    }
+
+    private function calculateSetWinnaar($thuisSet, $uitSet, &$spelerThuis_punten, &$spelerUit_punten){
+        if($thuisSet > $uitSet) {
+            $spelerThuis_punten++;
+        } else {
+            $spelerUit_punten++;
+        }     
     }
 
 }

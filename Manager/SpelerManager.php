@@ -2,19 +2,29 @@
 require_once(__DIR__ . '/../Repository/SpelerRepository.php');
 require_once(__DIR__ . '/../Repository/WedstrijdRepository.php');
 class SpelerManager {
+    private $_wedstrijdRepository;
+    private $_spelerRepository;
+    
+    function __construct()
+    {
+        $this->_wedstrijdRepository = new WedstrijdRepository();
+        $this->_spelerRepository = new SpelerRepository();
 
+    }
     public function getSpeler($speler_id){
 
         //Bepalen - huidig seizoen TODO
         $seizoen_id = '1';
-
-        $_spelerRepository = new SpelerRepository();
-        $_wedstrijdRepository = new WedstrijdRepository();
-        $speler = $_spelerRepository->get($speler_id);
-        $speler->wedstrijden = $_wedstrijdRepository->getBySpelerAndSeizoen($speler_id, $seizoen_id);
+        $speler = $this->_spelerRepository->get($speler_id);
+        $speler->wedstrijden = $this->_wedstrijdRepository->getBySpelerAndSeizoen($speler_id, $seizoen_id);
         $this->calculateStats($speler);
         return $speler;
 
+    }
+
+    public function getAll(){
+        $spelers =  $this->_spelerRepository->getAll();
+        return $spelers;
     }
 
     private function calculateStats($speler){

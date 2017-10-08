@@ -14,6 +14,7 @@ class ConnectionSettings
         if ($this->mysqli->connect_error) {
             throw new Exception('Connect Error (' . $this->mysqli->connect_errno . ') '. $this->mysqli->connect_error);
         }
+        $this->mysqli->set_charset("utf8");
     }
 
     public function close()

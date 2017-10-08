@@ -30,7 +30,7 @@ class RondeManager {
             foreach ($poules as $poule){
                 $spelerIds = array_keys($poule->spelers);
                 $combinations = array();
-                combinatieZoeker($spelerIds, array(), 0, sizeof($spelerIds)-1, 0, $combinations);
+                $this->combinatieZoeker($spelerIds, array(), 0, sizeof($spelerIds)-1, 0, $combinations);
                 foreach($combinations as $combination){
                     $thuisSpeler = $poule->spelers[$combination[0]];
                     $uitSpeler = $poule->spelers[$combination[1]];
@@ -40,6 +40,7 @@ class RondeManager {
                     $this->_wedstrijdRepository->insert($poule->id, $thuisSpeler->id, $thuisSpelerHandicap, $uitSpeler->id, $uitSpelerHandicap);
                 }
             }
+            $this->_rondeRepository->setGenerated($ronde_id);
             return true;
         }
         else return false;
@@ -53,6 +54,12 @@ class RondeManager {
         }
     }
 
+    public function getCurrentPoules(){
+        $huidigeRonde = $this->_rondeRepository->getHuidigeRonde();        
+        if(isset($huidigeRonde->id)){
+            return $this->_pouleRepository->getByRondeId($huidigeRonde->id);
+        }
+    }      
     public function getRondes(){
         return $this->_rondeRepository->getRondes();
     }
@@ -75,8 +82,8 @@ class RondeManager {
     }
 
     private function calculateHandicap($thuisSpeler, $uitSpeler, &$thuisSpelerHandicap, &$uitSpelerHandicap){
-        $thuisHandicap = $this->calculateHandicap($thuisSpeler);
-        $uitHandicap = $this->calculateHandicap($uitSpeler);
+        $thuisHandicap = $this->calculateHandicapSpeler($thuisSpeler);
+        $uitHandicap = $this->calculateHandicapSpeler($uitSpeler);
         $totalHandicap = $thuisHandicap - $uitHandicap;
         if($totalHandicap < 0){
             $thuisSpelerHandicap = $totalHandicap * -1;
@@ -146,7 +153,7 @@ class RondeManager {
         for ($i=$start; $i<=$end && $end-$i+1 >= 2-$index; $i++)
         {
             $data[$index] = $array[$i];
-            combinatieZoeker($array, $data, $i+1, $end, $index+1, $output);
+            $this->combinatieZoeker($array, $data, $i+1, $end, $index+1, $output);
         }
     }
 }

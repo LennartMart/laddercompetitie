@@ -22,6 +22,7 @@ class Wedstrijd
 
     public $ingevuld;
     public $ingevuld_door;
+    public $ingevuld_op;
 
     //optionele velden
     public $ronde_id;
@@ -50,5 +51,6 @@ class Wedstrijd
         $this->spelerUit_handicap = $data['spelerUit_handicap'];
         $this->ingevuld = $data['ingevuld'];
         $this->ingevuld_door = $data['ingevuld_door'];
+        $this->ingevuld_op = $data['ingevuld_op'];
     }
 }

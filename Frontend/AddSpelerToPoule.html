@@ -1,0 +1,93 @@
+<html>
+        <head>
+            <title>Voeg een nieuwe poule toe</title>
+            <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common.min.css" />
+            <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.default.min.css" />
+            <script src="http://kendo.cdn.telerik.com/2017.3.913/js/jquery.min.js"></script>
+            <script src="http://kendo.cdn.telerik.com/2017.3.913/js/kendo.all.min.js"></script>
+            <script>
+                $( document ).ready(function() {
+                    $("#poule").kendoDropDownList({
+                        dataTextField: "naam",
+                        dataValueField: "id",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    dataType: "json",
+                                    url: "../controllers/get.php?action=getPoules",
+                                }
+                            },
+                            schema: {
+                                parse: function(response) {
+                                    var response_array = [];
+                                    for ( var item in response["poules"] ){
+                                        response_array.push( response["poules"][ item ] );
+                                    }
+                                    return response_array;
+                                }
+                            }
+                        }
+                    });
+                    $("#speler").kendoDropDownList({
+                        dataTextField: "volledigeNaam",
+                        dataValueField: "id",
+                        dataSource: {
+                            transport: {
+                                read: {
+                                    dataType: "json",
+                                    url: "../controllers/get.php?action=getSpelers",
+                                }
+                            },
+                            schema: {
+                                parse: function(response) {
+                                    for(var i = 0; i < response["spelers"].length; i++)
+                                    {
+                                        response["spelers"][i]["volledigeNaam"] = response["spelers"][i]["voornaam"] + " " + response["spelers"][i]["naam"];
+                                    }                                   
+                                    return response["spelers"];
+                                }
+                            }
+                        }
+                    });
+                    var validatable = $("#form").kendoValidator().data("kendoValidator");
+                    $("#voegSpelerToe").click(function() {
+                        if (validatable.validate()) {
+                            $.post("../controllers/post.php", {action: "addSpelerToPoule", speler_id: $("#speler").data("kendoDropDownList").value(), 
+                                poule_id: $("#poule").data("kendoDropDownList").value()}, 
+                                function(data){
+                                    $("#ok").hide();
+                                    $("#error").hide();
+                                    if(data["success"]) {
+                                        $("#ok").text($("#speler").data("kendoDropDownList").text() + " succesvol toegevoegd!");
+                                        $("#ok").show();
+                                    } else {
+                                        $("#error").text(data["error"]);
+                                        $("#error").show();
+                                    }
+                                }, "json"
+                            )                            
+                        }
+                    });
+                });
+            </script>
+        </head>
+        <body>
+            <h3>Voeg speler toe aan poule</h3>
+            <div id="error" class='alert alert-error' style="display: none">
+            </div>
+            <div id="ok" class='alert alert-success' style="display: none">
+                Speler werd succesvol toegevoegd!
+            </div>
+            <div id="form">
+                <h4 style="margin-top: 2em;">Poule: </h4>
+                <input id="poule" type="text" class="k-textbox" name="Poule" required/>
+                <h4 style="margin-top: 2em;">Speler:</h4>
+                <input id="speler" type="text" class="k-textbox" name="Speler" required/>
+            </div>
+        
+            
+            <input id="voegSpelerToe" class = 'k-button' style="margin-top: 2em;" type="button" value="Toevoegen">
+        
+        
+        </body>
+        </html>

@@ -1,0 +1,66 @@
+<html>
+<head>
+    <title>Voeg een nieuwe poule toe</title>
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common.min.css" />
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.default.min.css" />
+    <script src="http://kendo.cdn.telerik.com/2017.3.913/js/jquery.min.js"></script>
+    <script src="http://kendo.cdn.telerik.com/2017.3.913/js/kendo.all.min.js"></script>
+    <script>
+        $( document ).ready(function() {
+            $("#ronde").kendoDropDownList({
+                dataTextField: "naam",
+                dataValueField: "id",
+                dataSource: {
+                    transport: {
+                        read: {
+                            dataType: "json",
+                            url: "../controllers/get.php?action=getRondes",
+                        }
+                    },
+                    schema: {
+                        parse: function(response) {
+                            return response["rondes"];
+                        }
+                    }
+                }
+            });
+            var validatable = $("#form").kendoValidator().data("kendoValidator");
+            $("#voegPouleToe").click(function() {
+                if (validatable.validate()) {
+                    if(confirm("Een nieuwe poule wordt toegevoegd. Bent u zeker?")) {
+                        $.post("../controllers/post.php", {action: "createPoule", naam: $("#naam").val(), ronde_id: $("#ronde").data("kendoDropDownList").value()}, 
+                            function(data){
+                                if(data["success"]) {
+                                    $("#ok").show();
+                                } else {
+                                    $("#error").text(data["error"]);
+                                    $("#error").show();
+                                }
+                            }, "json"
+                        )
+                    }
+                }
+            });
+        });
+    </script>
+</head>
+<body>
+    <h3>Voeg een nieuwe poule toe</h3>
+    <div id="error" class='alert alert-error' style="display: none">
+    </div>
+    <div id="ok" class='alert alert-success' style="display: none">
+        Poule werd succesvol toegevoegd!
+    </div>
+    <div id="form">
+        <h4>Ronde: </h4>
+        <input id="ronde" type="text" class="k-textbox" name="Ronde" required/>
+        <h4 style="margin-top: 2em;">Naam:</h4>
+        <input id="naam" type="text" class="k-textbox" name="Naam" required/>
+    </div>
+
+    
+    <input id="voegPouleToe" class = 'k-button' style="margin-top: 2em;" type="button" value="Toevoegen">
+
+
+</body>
+</html>

@@ -75,8 +75,42 @@
                 echo json_encode($data);
                 break;
             case "generateWedstrijden":
+                if(isset($_POST['ronde_id']) && !empty($_POST['ronde_id']))
+                {
+                    $rondeManager = new rondeManager();
+                    $geslaagd = $rondeManager->genereer($_POST['ronde_id']);
+                    if($geslaagd){
+                        $data["success"] = true;
+                    } else {
+                        $data["success"] = false;
+                        $data["error"] = "Ronde werd reeds gegenereerd!";
+                    }
+
+                } else {
+                    $data["success"] = false;
+                    $data["error"] = "Niet alle elementen werden meegegeven";
+                }
+                echo json_encode($data);
+
                 break;
             case "vulWedstrijdIn":
+                if(isset($_POST['wedstrijd_id']) && !empty($_POST['wedstrijd_id'])
+                && isset($_POST['spelerThuis_set1']) && !empty($_POST['spelerThuis_set1'])
+                && isset($_POST['spelerThuis_set2']) && !empty($_POST['spelerThuis_set2'])
+                && isset($_POST['spelerUit_set1']) && !empty($_POST['spelerUit_set1'])
+                && isset($_POST['spelerUit_set2']) && !empty($_POST['spelerUit_set2'])        )
+                {      
+                    $wedstrijdManager = new WedstrijdManager();
+                    $errors = $wedstrijdManager->vulIn($_POST['wedstrijd_id'], $_POST['spelerThuis_set1'],  $_POST['spelerThuis_set2'],  $_POST['spelerThuis_set3'],
+                    $_POST['spelerUit_set1'], $_POST['spelerUit_set2'], $_POST['spelerUit_set3'], "test");
+                    $data["success"] = empty($errors);
+                    $data["error"] = $errors;
+                }
+                else {
+                    $data["success"] = false;
+                    $data["error"] = "Niet alle elementen werden meegegeven";
+                }
+                echo json_encode($data);
                 break;
         }
     }
