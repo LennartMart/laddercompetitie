@@ -21,16 +21,23 @@ class WedstrijdRepository
     public function get($wedstrijd_id)
     {
         //Haal wedstrijd op en vul de members in
-        $get_query = sprintf("SELECT id as wedstrijd_id, * FROM intra_enkel_wedstrijd IW WHERE id = '%s';", $this->db->mysqli->real_escape_string($wedstrijd_id));
-        $result = $this->db->mysqli->query($get_query);
+        $select_query = sprintf("SELECT p.id AS poule_id, p.naam AS naam, w.id as wedstrijd_id, w.*, 
+        s1.naam AS spelerThuis_naam, s1.voornaam AS spelerThuis_voornaam, s2.naam AS spelerUit_naam, s2.voornaam AS spelerUit_voornaam
+        FROM intra_enkel_poule as p
+        INNER JOIN intra_enkel_wedstrijd w ON w.poule_id = p.id
+        INNER JOIN intra_spelers s1 ON s1.id = w.spelerThuis_id
+        INNER JOIN intra_spelers s2 ON s2.id = w.spelerUit_id
+        WHERE w.id = '%s';",
+        $this->db->mysqli->real_escape_string($wedstrijd_id));
+        $result = $this->db->mysqli->query($select_query);
         if ($result) {
             // fetch the result row.
             $data = $result->fetch_assoc();
             $wedstrijd = new Wedstrijd();
-            $wedstrijd->vulOp($row);
-            return true;
+            $wedstrijd->vulOp($data);
+            return $wedstrijd;
         }
-        return false;
+        return new Wedstrijd();
     }
     public function insert($poule_id, $spelerThuis_id, $spelerThuis_handicap, $spelerUit_id, $spelerUit_handicap){
         $insert_query = sprintf("INSERT INTO intra_enkel_wedstrijd
@@ -68,7 +75,7 @@ class WedstrijdRepository
                 ingevuld_door = '%s',
                 ingevuld_op = NOW(),
                 ingevuld = '1'
-            WHERE wedstrijd_id = '%s';",            
+            WHERE id = '%s';",            
             $this->db->mysqli->real_escape_string($spelerThuis_set1),
             $this->db->mysqli->real_escape_string($spelerThuis_set2),
             $this->db->mysqli->real_escape_string($spelerThuis_set3),

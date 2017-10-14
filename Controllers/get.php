@@ -24,7 +24,7 @@
                     echo json_encode($data);
                 } else {
                     $data["success"] = false;
-                    $data["errors"] = "Geen ronde meegegeven!";
+                    $data["error"] = "Geen ronde meegegeven!";
                     echo json_encode($data);                    
                 }
                 break;
@@ -38,7 +38,7 @@
                     echo json_encode($data);
                 } else {
                     $data["success"] = false;
-                    $data["errors"] = "Geen poule meegegeven!";
+                    $data["error"] = "Geen poule meegegeven!";
                     echo json_encode($data);                    
                 }
                 break;
@@ -64,6 +64,20 @@
                 $data["success"] = true;
                 $data["spelers"] = $spelers;
                 echo json_encode($data); 
+                break;
+            case 'getWedstrijd':
+                if(isset($_GET['wedstrijd_id']) && !empty($_GET['wedstrijd_id']))
+                {
+                    $wedstrijdManager = new WedstrijdManager();
+                    $wedstrijd = $wedstrijdManager->get($_GET['wedstrijd_id']);
+                    $data["success"] = true;
+                    $data["wedstrijd"] = $wedstrijd;
+                    echo json_encode($data);
+                } else {
+                    $data["success"] = false;
+                    $data["error"] = "Geen wedstrijd_id meegegeven!";
+                    echo json_encode($data);                    
+                }
                 break;
         }
     }

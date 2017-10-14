@@ -108,7 +108,7 @@
                 }
                 else {
                     $data["success"] = false;
-                    $data["error"] = "Niet alle elementen werden meegegeven";
+                    $data["error"] = "Oeps... Heb je een correcte uitslag ingegeven?";
                 }
                 echo json_encode($data);
                 break;

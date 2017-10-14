@@ -1,0 +1,141 @@
+<html>
+    <head>
+        <title>Vul wedstrijd in</title>
+        <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common.min.css" />
+        <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.default.min.css" />
+        <script src="http://kendo.cdn.telerik.com/2017.3.913/js/jquery.min.js"></script>
+        <script src="http://kendo.cdn.telerik.com/2017.3.913/js/kendo.all.min.js"></script>
+        <script>
+            $( document ).ready(function() {
+                var wedstrijd_id = getUrlParameter('wedstrijd_id');
+                if(!wedstrijd_id){
+                    $("#form").hide();
+                    $("#error").text("Geen wedstrijd meegegeven!").show();
+                }
+                else {
+                    $.get("../Controllers/get.php?action=getWedstrijd&wedstrijd_id=" + wedstrijd_id,
+                    function(data){
+                        if(data["success"]){
+                            var wedstrijd = data["wedstrijd"];
+                            if(wedstrijd["id"]){
+                                $("#thuisSpeler").text(wedstrijd["spelerThuis_voornaam"] + " " + wedstrijd["spelerThuis_naam"]);
+                                $("#uitSpeler").text(wedstrijd["spelerUit_voornaam"] + " " + wedstrijd["spelerUit_naam"]);
+                                $("#wedstrijdId").val(wedstrijd["id"]);
+                            } else {
+                                $("#error").text("Geen wedstrijd gevonden").show();
+                            }
+                        }
+                        else {
+                            $("#error").text(data["error"]).show();
+                        }
+                    },
+                    "json");
+                    $("#vulWedstrijdIn").click(function() {
+                        $("#ok").hide();
+                        $("#error").hide();
+                        var spelerThuis_set1 = $("#spelerThuis_set1").val();
+                        var spelerThuis_set2 = $("#spelerThuis_set2").val();
+                        var spelerThuis_set3 = $("#spelerThuis_set3").val();
+                        var spelerUit_set1 = $("#spelerUit_set1").val();
+                        var spelerUit_set2 = $("#spelerUit_set2").val();
+                        var spelerUit_set3 = $("#spelerUit_set3").val();
+                        var wedstrijd_id = $("#wedstrijdId").val();
+                        $.post("../controllers/post.php", 
+                            {
+                                action: "vulWedstrijdIn",
+                                spelerThuis_set1: spelerThuis_set1,
+                                spelerThuis_set2: spelerThuis_set1,
+                                spelerThuis_set3: spelerThuis_set3,
+                                spelerUit_set1: spelerUit_set1,
+                                spelerUit_set2: spelerUit_set2,
+                                spelerUit_set3: spelerUit_set3,
+                                wedstrijd_id: wedstrijd_id
+                            }, 
+                            function(data){
+                                if(data["success"]) {
+                                    $("#ok").show();
+                                    $("#form").hide();
+                                } else {
+                                    $("#error").text(data["error"]);
+                                    $("#error").show();
+                                }
+                            }, "json"
+                        )                                              
+                    });
+                }
+            });
+
+            var getUrlParameter = function getUrlParameter(sParam) {
+                var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+                    sURLVariables = sPageURL.split('&'),
+                    sParameterName,
+                    i;
+
+                for (i = 0; i < sURLVariables.length; i++) {
+                    sParameterName = sURLVariables[i].split('=');
+
+                    if (sParameterName[0] === sParam) {
+                        return sParameterName[1] === undefined ? true : sParameterName[1];
+                    }
+                }
+            };
+        </script>
+    </head>
+    <body>
+        <h3>Vul je wedstrijd in</h3>
+        <div id="error" class='alert alert-error' style="display: none">
+        </div>
+        <div id="ok" class='alert alert-success' style="display: none">
+            De match werd succesvol opgeslagen. Bedankt!
+        </div>
+        <div id="form">
+            <input id="wedstrijdId" type="hidden"/>
+            <table class="">
+                <tbody>
+                    <tr>
+                        <th></th>
+                        <th></th>
+                        <th></th>
+                        <th colspan="4">Set 1</th>
+                        <th colspan="4">Set 2</th>
+                        <th colspan="3">Set 3</th>
+                    </tr>
+                    <tr>
+                        <td align="center" id="thuisSpeler">
+                            Lennart Martens
+                        </td>
+                        <td>-</td>
+                        <td align="center" id="uitSpeler">
+                            Dirk Morel
+                        </td>
+                        <td>
+                            <input style="width:30px" type="input" size="1" id="spelerThuis_set1"></td>
+                        <td>-</td>
+                        <td>
+                            <input style="width:30px" type="input" size="1" id="spelerUit_set1"></td>
+                        <td></td>
+                        <td><input style="width:30px" type="input" size="1" id="spelerThuis_set2"></td>
+                        <td>-</td>
+                        <td>
+                            <input style="width:30px" type="input" size="1" id="spelerUit_set2">
+                        </td>
+                        <td></td>
+                        <td>
+                            <input style="width:30px" type="input" size="1" id="spelerThuis_set3">
+                        </td>
+                        <td>-</td>
+                        <td>
+                            <input style="width:30px" type="input" size="1" id="spelerUit_set3">
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <input id="vulWedstrijdIn" class = 'k-button' style="margin-top: 2em;" type="button" value="Indienen">
+        </div>
+    
+        
+
+    
+    
+    </body>
+    </html>

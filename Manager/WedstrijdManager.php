@@ -12,6 +12,10 @@ class WedstrijdManager {
 
     }
 
+    public function get($wedstrijd_id){
+        return $this->_wedstrijdRepository->get($wedstrijd_id);
+    }
+
     public function vulIn($wedstrijd_id, $spelerThuis_set1, $spelerThuis_set2, $spelerThuis_set3, $spelerUit_set1,
         $spelerUit_set2, $spelerUit_set3, $ingevuld_door){
         $errors = Array();
