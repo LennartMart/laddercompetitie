@@ -5,59 +5,66 @@
         <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.default.min.css" />
         <script src="http://kendo.cdn.telerik.com/2017.3.913/js/jquery.min.js"></script>
         <script src="http://kendo.cdn.telerik.com/2017.3.913/js/kendo.all.min.js"></script>
+        <script src="http://kendo.cdn.telerik.com/2017.3.913/js/cultures/kendo.culture.nl-BE.min.js"></script>
         <script>
-            $( document ).ready(function() {
+            jQuery( document ).ready(function() {
+                kendo.culture("nl-BE");
                 var wedstrijd_id = getUrlParameter('wedstrijd_id');
+                jQuery("#datepicker").kendoDatePicker({
+                    value: new Date()
+                });
                 if(!wedstrijd_id){
-                    $("#form").hide();
-                    $("#error").text("Geen wedstrijd meegegeven!").show();
+                    jQuery("#form").hide();
+                    jQuery("#error").text("Geen wedstrijd meegegeven!").show();
                 }
                 else {
-                    $.get("../Controllers/get.php?action=getWedstrijd&wedstrijd_id=" + wedstrijd_id,
+                    jQuery.get("index.php?option=com_jumi&fileid=22&format=raw&action=getWedstrijd&wedstrijd_id=" + wedstrijd_id,
                     function(data){
                         if(data["success"]){
                             var wedstrijd = data["wedstrijd"];
                             if(wedstrijd["id"]){
-                                $("#thuisSpeler").text(wedstrijd["spelerThuis_voornaam"] + " " + wedstrijd["spelerThuis_naam"]);
-                                $("#uitSpeler").text(wedstrijd["spelerUit_voornaam"] + " " + wedstrijd["spelerUit_naam"]);
-                                $("#wedstrijdId").val(wedstrijd["id"]);
+                                jQuery("#thuisSpeler").text(wedstrijd["spelerThuis_voornaam"] + " " + wedstrijd["spelerThuis_naam"]);
+                                jQuery("#uitSpeler").text(wedstrijd["spelerUit_voornaam"] + " " + wedstrijd["spelerUit_naam"]);
+                                jQuery("#wedstrijdId").val(wedstrijd["id"]);
+                                jQuery("#form").show();
                             } else {
-                                $("#error").text("Geen wedstrijd gevonden").show();
+                                jQuery("#error").text("Geen wedstrijd gevonden").show();
                             }
                         }
                         else {
-                            $("#error").text(data["error"]).show();
+                            jQuery("#error").text(data["error"]).show();
                         }
                     },
                     "json");
-                    $("#vulWedstrijdIn").click(function() {
-                        $("#ok").hide();
-                        $("#error").hide();
-                        var spelerThuis_set1 = $("#spelerThuis_set1").val();
-                        var spelerThuis_set2 = $("#spelerThuis_set2").val();
-                        var spelerThuis_set3 = $("#spelerThuis_set3").val();
-                        var spelerUit_set1 = $("#spelerUit_set1").val();
-                        var spelerUit_set2 = $("#spelerUit_set2").val();
-                        var spelerUit_set3 = $("#spelerUit_set3").val();
-                        var wedstrijd_id = $("#wedstrijdId").val();
-                        $.post("../controllers/post.php", 
+                    jQuery("#vulWedstrijdIn").click(function() {
+                        jQuery("#ok").hide();
+                        jQuery("#error").hide();
+                        var spelerThuis_set1 = jQuery("#spelerThuis_set1").val();
+                        var spelerThuis_set2 = jQuery("#spelerThuis_set2").val();
+                        var spelerThuis_set3 = jQuery("#spelerThuis_set3").val();
+                        var spelerUit_set1 = jQuery("#spelerUit_set1").val();
+                        var spelerUit_set2 = jQuery("#spelerUit_set2").val();
+                        var spelerUit_set3 = jQuery("#spelerUit_set3").val();
+                        var wedstrijd_id = jQuery("#wedstrijdId").val();
+                        jQuery.post("index.php?option=com_jumi&fileid=23&format=raw", 
                             {
                                 action: "vulWedstrijdIn",
                                 spelerThuis_set1: spelerThuis_set1,
-                                spelerThuis_set2: spelerThuis_set1,
+                                spelerThuis_set2: spelerThuis_set2,
                                 spelerThuis_set3: spelerThuis_set3,
                                 spelerUit_set1: spelerUit_set1,
                                 spelerUit_set2: spelerUit_set2,
                                 spelerUit_set3: spelerUit_set3,
-                                wedstrijd_id: wedstrijd_id
+                                wedstrijd_id: wedstrijd_id,
+                                datum: kendo.toString(jQuery("#datepicker").data("kendoDatePicker").value(), "yyyy-MM-dd")
                             }, 
                             function(data){
                                 if(data["success"]) {
-                                    $("#ok").show();
-                                    $("#form").hide();
+                                    jQuery("#ok").show();
+                                    jQuery("#form").hide();
                                 } else {
-                                    $("#error").text(data["error"]);
-                                    $("#error").show();
+                                    jQuery("#error").text(data["error"]);
+                                    jQuery("#error").show();
                                 }
                             }, "json"
                         )                                              
@@ -88,7 +95,7 @@
         <div id="ok" class='alert alert-success' style="display: none">
             De match werd succesvol opgeslagen. Bedankt!
         </div>
-        <div id="form">
+        <div id="form" style="display: none">
             <input id="wedstrijdId" type="hidden"/>
             <table class="">
                 <tbody>
@@ -96,17 +103,21 @@
                         <th></th>
                         <th></th>
                         <th></th>
+                        <th>Datum</th>
                         <th colspan="4">Set 1</th>
                         <th colspan="4">Set 2</th>
                         <th colspan="3">Set 3</th>
                     </tr>
                     <tr>
                         <td align="center" id="thuisSpeler">
-                            Lennart Martens
+                            
                         </td>
                         <td>-</td>
                         <td align="center" id="uitSpeler">
-                            Dirk Morel
+                        
+                        </td>
+                        <td style="padding-left: 20px;padding-right: 20px">
+                            <input id="datepicker" value="10/10/2011" name= "Einddatum" required/>
                         </td>
                         <td>
                             <input style="width:30px" type="input" size="1" id="spelerThuis_set1"></td>

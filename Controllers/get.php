@@ -1,5 +1,5 @@
 <?php
-
+    ('_JEXEC') or die;    
     require_once(__DIR__ . '/../Manager/RondeManager.php');
     require_once(__DIR__ . '/../Manager/SpelerManager.php');
     require_once(__DIR__ . '/../Manager/WedstrijdManager.php');
@@ -7,6 +7,11 @@
     if (isset($_GET['action']) && !empty($_GET['action'])) {
         $action = $_GET['action'];
         switch ($action) {
+            case 'isGeautoriseerd':
+                $user = JFactory::getUser();
+                $authorisedViewLevels = $user->getAuthorisedViewLevels();
+                echo json_encode(in_array(5,$authorisedViewLevels));
+                break;
             case 'viewCurrentRanking' :
                 $rondeManager = new RondeManager();
                 $ranking = $rondeManager->getCurrentRanking();

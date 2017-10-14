@@ -37,6 +37,7 @@ CREATE TABLE IF NOT EXISTS `intra_enkel_wedstrijd` (
   `spelerUit_set3` int(11) NOT NULL,
   `spelerUit_punten` int(11) NOT NULL,
   `ingevuld_door` varchar(32) NOT NULL,
+  `ingevuld_op` DATE NULL,  
   `ingevuld` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `poule_id` (`poule_id`),

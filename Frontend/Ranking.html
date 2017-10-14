@@ -5,109 +5,152 @@
         <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.default.min.css" />
         <script src="http://kendo.cdn.telerik.com/2017.3.913/js/jquery.min.js"></script>
         <script src="http://kendo.cdn.telerik.com/2017.3.913/js/kendo.all.min.js"></script>
+        <script src="http://kendo.cdn.telerik.com/2017.3.913/js/cultures/kendo.culture.nl-BE.min.js"></script>
         <script>
-            $( document ).ready(function() {
-                $.get("../Controllers/get.php?action=viewCurrentRanking",
-                    function(data){
-                        if (data["success"]) {
-                            var ranking = data["ranking"];
-                            for(var i = 0; i < ranking.length; i++) {
-                                var poule = ranking[i];
-                                $(".ranking").append("<div id='" + poule.id + "' ><div class='wedstrijden'></div><div class='stand'></div></div>");
-                                $(kendo.format(".ranking #{0} .wedstrijden", poule.id)).kendoGrid({
-                                    dataSource: {
-                                        data: poule.wedstrijden,
+            jQuery( document ).ready(function() {
+                kendo.culture("nl-BE");
+                var isGeautoriseerd = false;
+                var data;
+                jQuery.when(
+                    jQuery.get("index.php?option=com_jumi&fileid=22&format=raw&action=isGeautoriseerd",
+                        function(data){
+                            isGeautoriseerd = data;
+                        },
+                        "json"),
+                
+                    jQuery.get("index.php?option=com_jumi&fileid=22&format=raw&action=viewCurrentRanking",
+                        function(response){
+                            data = response;
+                        },
+                        "json")
+                ).then( function() {
+                    if (data["success"]) {
+                        var ranking = data["ranking"];
+                        for(var i = 0; i < ranking.length; i++) {
+                            var poule = ranking[i];
+                            jQuery(".ranking").append("<h1>" + poule.naam + "</h1><div id='" + poule.id + "' > "+
+                            "<ul class='panel'><li>Wedstrijden<div class='wedstrijden'></div></ul><br/>  <div class='stand'></div></div>");
+                            
+                            jQuery(kendo.format(".ranking #{0} .panel .wedstrijden", poule.id)).kendoGrid({
+                                scrollable: false,
+                                dataSource: {
+                                    data: poule.wedstrijden,
+                                },
+                                columns: [
+                                    {
+                                        field: "spelerThuis_naam",
+                                        template: "#: spelerThuis_voornaam # #: spelerThuis_naam # (#: spelerThuis_handicap#)",
+                                        title: "&nbsp;"
                                     },
-                                    columns: [
-                                        {
-                                            field: "spelerThuis_naam",
-                                            template: "#: spelerThuis_voornaam # #: spelerThuis_naam # (#: spelerThuis_handicap#)",
-                                            title: "#1"
-                                        },
-                                        {
-                                            field: "spelerUit_naam",
-                                            template: "#: spelerUit_voornaam # #: spelerUit_naam # (#: spelerUit_handicap#)",
-                                            title: "#2"
-                                        },
-                                        {
-                                            field: "spelerThuis_set1",
-                                            template: "# if (spelerThuis_set1 > 0) { # #:spelerThuis_set1 # - #:spelerUit_set1 # " +
-                                             "#:spelerThuis_set2 # - #:spelerUit_set2 # "+ 
-                                             "# if(spelerThuis_set3 > 0) { # #:spelerThuis_set3 # - #:spelerUit_set3 # # }  # " + "# } else {#  # } #",
-                                            title: "Uitslag"
-                                        },
-                                        {
-                                            field: "ingevuld_op",
-                                            title: "Datum"
-                                        },
-                                    ]
-                                })
+                                    {
+                                        field: "spelerUit_naam",
+                                        template: "#: spelerUit_voornaam # #: spelerUit_naam # (#: spelerUit_handicap#)",
+                                        title: "&nbsp;"
+                                    },
+                                    {
+                                        field: "spelerThuis_set1",
+                                        template: "# if (spelerThuis_set1 > 0) { # #:spelerThuis_set1 #-#:spelerUit_set1 # " +
+                                        "#:spelerThuis_set2 #-#:spelerUit_set2 # "+ 
+                                        "# if(spelerThuis_set3 > 0) { # #:spelerThuis_set3 #-#:spelerUit_set3 # # }  # " + "# } else {#  # } #",
+                                        title: "Uitslag"
+                                    },
+                                    {
+                                        field: "ingevuld_op",
+                                        template: "# if(ingevuld_op) { # #= kendo.toString(kendo.parseDate(ingevuld_op), 'dd-MM-yyyy')# # } #",
+                                        title: "Gespeeld op"
+                                    },
+                                    {
+                                        title: "&nbsp;",
+                                        template: "# if(ingevuld === '0' ){ # <a href='index.php?option=com_jumi&fileid=29&wedstrijd_id=#:id#'>Vul score in</a> # } #",
+                                        hidden: !isGeautoriseerd
+                                    }
+                                ]
+                            })
 
-                                $(kendo.format(".ranking #{0} .stand", poule.id)).kendoGrid({
-                                    dataSource: {
-                                        data: poule.spelers,
-                                        schema: {
-                                            parse: function(response){
-                                                for(var i = 0; i < response.length; i++){
-                                                    response[i].punten_saldo = response[i].punten_gewonnen - response[i].punten_verloren;
-                                                }
-                                                return response;
+                            jQuery(kendo.format(".ranking #{0} .stand", poule.id)).kendoGrid({
+                                scrollable: false,
+                                dataSource: {
+                                    data: poule.spelers,
+                                    schema: {
+                                        parse: function(response){
+                                            for(var i = 0; i < response.length; i++){
+                                                response[i].punten_saldo = response[i].punten_gewonnen - response[i].punten_verloren;
                                             }
-                                        },
-                                        sort: [{
-                                            field: "punten",
-                                            dir: "desc"
-                                        },
-                                        {
-                                            field: "punten_saldo",
-                                            dir: "desc"
+                                            return response;
                                         }
-                                        ]
                                     },
-                                    columns: [
-                                        {
-                                            field: "naam",
-                                            template: "#: voornaam # #: naam #",
-                                            title: "Speler"
-                                        },
-                                        {
-                                            field: "matchen_gespeeld",
-                                            title: "Gespeeld"
-                                        },
-                                        {
-                                            field: "matchen_gewonnen",
-                                            title: "Gewonnen"
-                                        },
-                                        {
-                                            field: "matchen_verloren",
-                                            title: "Verloren"
-                                        },
-                                        {
-                                            field: "punten_gewonnen",
-                                            title: "Punten gemaakt"
-                                        },
-                                        {
-                                            field: "punten_verloren",
-                                            title: "Punten tegen"
-                                        },
-                                        {
-                                            field: "punten_saldo",
-                                            title: "Saldo"
-                                        },
-                                        {
-                                            field: "punten",
-                                            title: "Score"
-                                        },                                                                                                                       
+                                    sort: [{
+                                        field: "punten",
+                                        dir: "desc"
+                                    },
+                                    {
+                                        field: "punten_saldo",
+                                        dir: "desc"
+                                    }
                                     ]
+                                },
+                                columns: [
+                                    {
+                                        field: "naam",
+                                        template: "#: voornaam # #: naam #",
+                                        title: "&nbsp;",
+                                        width: "25%",
+                                        headerAttributes: {                                                
+                                            
+                                        }
+                                    },
+                                    {
+                                        field: "matchen_gespeeld",
+                                        title: "#M"
+                                    },
+                                    {
+                                        field: "matchen_gewonnen",
+                                        title: "M+"
+                                    },
+                                    {
+                                        field: "matchen_verloren",
+                                        title: "M-"
+                                    },
+                                    {
+                                        field: "punten_gewonnen",
+                                        title: "Punten+"
+                                    },
+                                    {
+                                        field: "punten_verloren",
+                                        title: "Punten-"
+                                    },
+                                    {
+                                        field: "punten_saldo",
+                                        title: "Saldo"
+                                    },
+                                    {
+                                        field: "punten",
+                                        title: "Score"
+                                    },                                                                                                                       
+                                ]
 
-                                })
+                            });
 
-                            }
+                            jQuery(kendo.format(".ranking #{0} .panel", poule.id)).kendoPanelBar({
+                                animation: {
+                                    // fade-in and expand opening items over 500 milliseconds
+                                    expand: {
+                                        duration: 500,
+                                        effects: "expandVertical fadeIn"
+                                    }
+                                }
+                            });
+
                         }
-                    },
-                    "json");
+                    }
+                })
             });
         </script>
+        <style>
+            .k-panelbar .k-header
+            {
+            }
+        </style>
     </head>
     <body>    
     <div class="ranking">

@@ -1,4 +1,5 @@
 <?php
+('_JEXEC') or die; 
 require_once (__DIR__ . '/../connect.php');
 require_once (__DIR__ . '/../Model/Wedstrijd.php');
 
@@ -60,7 +61,7 @@ class WedstrijdRepository
     }
 
     public function vulIn($wedstrijd_id, $spelerThuis_set1, $spelerThuis_set2, $spelerThuis_set3, $spelerThuis_punten, $spelerUit_set1,
-        $spelerUit_set2, $spelerUit_set3, $spelerUit_punten, $ingevuld_door){
+        $spelerUit_set2, $spelerUit_set3, $spelerUit_punten, $ingevuld_door, $datum){
         
         $update_query = sprintf("UPDATE intra_enkel_wedstrijd
             SET                
@@ -73,7 +74,7 @@ class WedstrijdRepository
                 spelerUit_set3 = '%s',
                 spelerUit_punten = '%s',
                 ingevuld_door = '%s',
-                ingevuld_op = NOW(),
+                ingevuld_op = '%s',
                 ingevuld = '1'
             WHERE id = '%s';",            
             $this->db->mysqli->real_escape_string($spelerThuis_set1),
@@ -85,6 +86,7 @@ class WedstrijdRepository
             $this->db->mysqli->real_escape_string($spelerUit_set3),
             $this->db->mysqli->real_escape_string($spelerUit_punten),
             $this->db->mysqli->real_escape_string($ingevuld_door),
+            $this->db->mysqli->real_escape_string($datum),
             $this->db->mysqli->real_escape_string($wedstrijd_id));
         if( $this->db->mysqli->query($update_query) === TRUE) {
             return true;
@@ -129,14 +131,16 @@ class WedstrijdRepository
         INNER JOIN intra_enkel_wedstrijd w ON w.poule_id = p.id
         INNER JOIN intra_spelers s1 ON s1.id = w.spelerThuis_id
         INNER JOIN intra_spelers s2 ON s2.id = w.spelerUit_id
-        WHERE p.ronde_id = '%s' ORDER BY w.ingevuld_op DESC;",
+        WHERE p.ronde_id = '%s' ORDER BY CASE WHEN w.ingevuld_op IS NULL THEN 1 ELSE 0 END, w.ingevuld_op;",
         $this->db->mysqli->real_escape_string($ronde_id));
         $result = $this->db->mysqli->query($select_query);
-        while($row = $result->fetch_array())
-        {            
-            $wedstrijd = new Wedstrijd();
-            $wedstrijd->vulOp($row);
-            $poules[$row["poule_id"]]->wedstrijden[] = $wedstrijd;
+        if($result){
+            while($row = $result->fetch_array())
+            {            
+                $wedstrijd = new Wedstrijd();
+                $wedstrijd->vulOp($row);
+                $poules[$row["poule_id"]]->wedstrijden[] = $wedstrijd;
+            }
         }
         return $poules;
     }

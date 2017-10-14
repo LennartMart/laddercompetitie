@@ -5,16 +5,18 @@
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.default.min.css" />
     <script src="http://kendo.cdn.telerik.com/2017.3.913/js/jquery.min.js"></script>
     <script src="http://kendo.cdn.telerik.com/2017.3.913/js/kendo.all.min.js"></script>
+    <script src="http://kendo.cdn.telerik.com/2017.3.913/js/cultures/kendo.culture.nl-BE.min.js"></script>
     <script>
-        $( document ).ready(function() {
-            $("#ronde").kendoDropDownList({
+        jQuery( document ).ready(function() {
+            kendo.culture("nl-BE");
+            jQuery("#ronde").kendoDropDownList({
                 dataTextField: "naam",
                 dataValueField: "id",
                 dataSource: {
                     transport: {
                         read: {
                             dataType: "json",
-                            url: "../controllers/get.php?action=getRondes",
+                            url: "index.php?option=com_jumi&fileid=22&format=raw&action=getRondes",
                         }
                     },
                     schema: {
@@ -24,17 +26,17 @@
                     }
                 }
             });
-            var validatable = $("#form").kendoValidator().data("kendoValidator");
-            $("#voegPouleToe").click(function() {
+            var validatable = jQuery("#form").kendoValidator().data("kendoValidator");
+            jQuery("#voegPouleToe").click(function() {
                 if (validatable.validate()) {
                     if(confirm("Een nieuwe poule wordt toegevoegd. Bent u zeker?")) {
-                        $.post("../controllers/post.php", {action: "createPoule", naam: $("#naam").val(), ronde_id: $("#ronde").data("kendoDropDownList").value()}, 
+                        jQuery.post("index.php?option=com_jumi&fileid=23&format=raw", {action: "createPoule", naam: jQuery("#naam").val(), ronde_id: jQuery("#ronde").data("kendoDropDownList").value()}, 
                             function(data){
                                 if(data["success"]) {
-                                    $("#ok").show();
+                                    jQuery("#ok").show();
                                 } else {
-                                    $("#error").text(data["error"]);
-                                    $("#error").show();
+                                    jQuery("#error").text(data["error"]);
+                                    jQuery("#error").show();
                                 }
                             }, "json"
                         )

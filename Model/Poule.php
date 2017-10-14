@@ -1,4 +1,5 @@
 <?php
+('_JEXEC') or die; 
 class Poule
 {
     public $id;

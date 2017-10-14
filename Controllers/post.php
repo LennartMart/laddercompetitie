@@ -1,12 +1,21 @@
 <?php
-
+    ('_JEXEC') or die;    
     require_once(__DIR__ . '/../Manager/RondeManager.php');
     require_once(__DIR__ . '/../Manager/PouleManager.php');
     require_once(__DIR__ . '/../Manager/SpelerManager.php');
     require_once(__DIR__ . '/../Manager/WedstrijdManager.php');
     date_default_timezone_set("Europe/Brussels");
+
     if(isset($_POST['action']) && !empty($_POST['action']))
     {
+        $user = JFactory::getUser();
+        $authorisedViewLevels = $user->getAuthorisedViewLevels();
+        if(!in_array(5,$authorisedViewLevels)){
+            $data["success"] = false;
+            $data["error"] = "Onvoldoende rechten!";
+            echo json_encode($data);
+            die;
+        }
         $action = $_POST['action'];
         switch ($action) {
             //Tested
@@ -98,11 +107,12 @@
                 && isset($_POST['spelerThuis_set1']) && !empty($_POST['spelerThuis_set1'])
                 && isset($_POST['spelerThuis_set2']) && !empty($_POST['spelerThuis_set2'])
                 && isset($_POST['spelerUit_set1']) && !empty($_POST['spelerUit_set1'])
-                && isset($_POST['spelerUit_set2']) && !empty($_POST['spelerUit_set2'])        )
+                && isset($_POST['spelerUit_set2']) && !empty($_POST['spelerUit_set2'])
+                && isset($_POST['datum']) && !empty($_POST['datum']))
                 {      
                     $wedstrijdManager = new WedstrijdManager();
                     $errors = $wedstrijdManager->vulIn($_POST['wedstrijd_id'], $_POST['spelerThuis_set1'],  $_POST['spelerThuis_set2'],  $_POST['spelerThuis_set3'],
-                    $_POST['spelerUit_set1'], $_POST['spelerUit_set2'], $_POST['spelerUit_set3'], "test");
+                    $_POST['spelerUit_set1'], $_POST['spelerUit_set2'], $_POST['spelerUit_set3'], $user->name, $_POST['datum']);
                     $data["success"] = empty($errors);
                     $data["error"] = $errors;
                 }

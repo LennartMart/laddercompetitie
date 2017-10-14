@@ -1,5 +1,5 @@
 <?php
-
+('_JEXEC') or die; 
 require_once(__DIR__ . '/../Repository/WedstrijdRepository.php');
 
 class WedstrijdManager {
@@ -17,7 +17,7 @@ class WedstrijdManager {
     }
 
     public function vulIn($wedstrijd_id, $spelerThuis_set1, $spelerThuis_set2, $spelerThuis_set3, $spelerUit_set1,
-        $spelerUit_set2, $spelerUit_set3, $ingevuld_door){
+        $spelerUit_set2, $spelerUit_set3, $ingevuld_door, $datum){
         $errors = Array();
         if($spelerThuis_set1 == "" || $spelerUit_set1 == "")
         {
@@ -58,7 +58,7 @@ class WedstrijdManager {
                 $this->calculateSetWinnaar($spelerThuis_set3, $spelerUit_set3, $spelerThuis_punten, $spelerUit_punten);
             }
             $this->_wedstrijdRepository->vulIn($wedstrijd_id, $spelerThuis_set1, $spelerThuis_set2, $spelerThuis_set3, $spelerThuis_punten, $spelerUit_set1,
-                $spelerUit_set2, $spelerUit_set3, $spelerUit_punten, $ingevuld_door);
+                $spelerUit_set2, $spelerUit_set3, $spelerUit_punten, $ingevuld_door, $datum);
         }
         return $errors;
     }

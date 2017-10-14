@@ -5,16 +5,18 @@
             <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.default.min.css" />
             <script src="http://kendo.cdn.telerik.com/2017.3.913/js/jquery.min.js"></script>
             <script src="http://kendo.cdn.telerik.com/2017.3.913/js/kendo.all.min.js"></script>
+            <script src="http://kendo.cdn.telerik.com/2017.3.913/js/cultures/kendo.culture.nl-BE.min.js"></script>
             <script>
-                $( document ).ready(function() {
-                    $("#poule").kendoDropDownList({
+                jQuery( document ).ready(function() {
+                    kendo.culture("nl-BE")
+                    jQuery("#poule").kendoDropDownList({
                         dataTextField: "naam",
                         dataValueField: "id",
                         dataSource: {
                             transport: {
                                 read: {
                                     dataType: "json",
-                                    url: "../controllers/get.php?action=getPoules",
+                                    url: "index.php?option=com_jumi&fileid=22&format=raw&action=getPoules",
                                 }
                             },
                             schema: {
@@ -28,14 +30,14 @@
                             }
                         }
                     });
-                    $("#speler").kendoDropDownList({
+                    jQuery("#speler").kendoDropDownList({
                         dataTextField: "volledigeNaam",
                         dataValueField: "id",
                         dataSource: {
                             transport: {
                                 read: {
                                     dataType: "json",
-                                    url: "../controllers/get.php?action=getSpelers",
+                                    url: "index.php?option=com_jumi&fileid=22&format=raw&action=getSpelers",
                                 }
                             },
                             schema: {
@@ -49,20 +51,20 @@
                             }
                         }
                     });
-                    var validatable = $("#form").kendoValidator().data("kendoValidator");
-                    $("#voegSpelerToe").click(function() {
+                    var validatable = jQuery("#form").kendoValidator().data("kendoValidator");
+                    jQuery("#voegSpelerToe").click(function() {
                         if (validatable.validate()) {
-                            $.post("../controllers/post.php", {action: "addSpelerToPoule", speler_id: $("#speler").data("kendoDropDownList").value(), 
-                                poule_id: $("#poule").data("kendoDropDownList").value()}, 
+                            jQuery.post("index.php?option=com_jumi&fileid=23&format=raw", {action: "addSpelerToPoule", speler_id: jQuery("#speler").data("kendoDropDownList").value(), 
+                                poule_id: jQuery("#poule").data("kendoDropDownList").value()}, 
                                 function(data){
-                                    $("#ok").hide();
-                                    $("#error").hide();
+                                    jQuery("#ok").hide();
+                                    jQuery("#error").hide();
                                     if(data["success"]) {
-                                        $("#ok").text($("#speler").data("kendoDropDownList").text() + " succesvol toegevoegd!");
-                                        $("#ok").show();
+                                        jQuery("#ok").text(jQuery("#speler").data("kendoDropDownList").text() + " succesvol toegevoegd!");
+                                        jQuery("#ok").show();
                                     } else {
-                                        $("#error").text(data["error"]);
-                                        $("#error").show();
+                                        jQuery("#error").text(data["error"]);
+                                        jQuery("#error").show();
                                     }
                                 }, "json"
                             )                            

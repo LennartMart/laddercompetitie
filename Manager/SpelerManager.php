@@ -1,4 +1,5 @@
 <?php
+('_JEXEC') or die; 
 require_once(__DIR__ . '/../Repository/SpelerRepository.php');
 require_once(__DIR__ . '/../Repository/WedstrijdRepository.php');
 class SpelerManager {

@@ -2,25 +2,27 @@
 <head>
     <title>Voeg een nieuwe ronde toe</title>
     <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.common.min.css" />
-    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.default.min.css" />
+    <link rel="stylesheet" href="http://kendo.cdn.telerik.com/2017.3.913/styles/kendo.default.min.css" />    
     <script src="http://kendo.cdn.telerik.com/2017.3.913/js/jquery.min.js"></script>
     <script src="http://kendo.cdn.telerik.com/2017.3.913/js/kendo.all.min.js"></script>
+    <script src="http://kendo.cdn.telerik.com/2017.3.913/js/cultures/kendo.culture.nl-BE.min.js"></script>
     <script>
-        $( document ).ready(function() {
-            $("#datepicker").kendoDatePicker({
+        jQuery( document ).ready(function() {
+            kendo.culture("nl-BE");
+            jQuery("#datepicker").kendoDatePicker({
                 value: new Date()
             });
-            var validatable = $("#form").kendoValidator().data("kendoValidator");
-            $("#voegRondeToe").click(function() {
+            var validatable = jQuery("#form").kendoValidator().data("kendoValidator");
+            jQuery("#voegRondeToe").click(function() {
                 if (validatable.validate()) {
                     if(confirm("Een nieuwe ronde wordt toegevoegd. Bent u zeker?")) {
-                        $.post("../controllers/post.php", {action: "createRonde", naam: $("#naam").val(), einddatum: kendo.toString($("#datepicker").data("kendoDatePicker").value(), "yyyy-MM-dd")}, 
+                        jQuery.post("index.php?option=com_jumi&fileid=23&format=raw", {action: "createRonde", naam: jQuery("#naam").val(), einddatum: kendo.toString(jQuery("#datepicker").data("kendoDatePicker").value(), "yyyy-MM-dd")}, 
                             function(data){
                                 if(data["success"]) {
-                                    $("#ok").show();
+                                    jQuery("#ok").show();
                                 } else {
-                                    $("#error").text(data["error"]);
-                                    $("#error").show();
+                                    jQuery("#error").text(data["error"]);
+                                    jQuery("#error").show();
                                 }
                             }, "json"
                         )
