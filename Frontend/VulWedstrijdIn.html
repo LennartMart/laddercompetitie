@@ -93,7 +93,7 @@
         <div id="error" class='alert alert-error' style="display: none">
         </div>
         <div id="ok" class='alert alert-success' style="display: none">
-            De match werd succesvol opgeslagen. Bedankt!
+            De match werd succesvol opgeslagen. Bedankt! <br/> <a href="www.bclandegem.be" onclick="window.history.go(-1); return false;">Terug naar de ranking</a>
         </div>
         <div id="form" style="display: none">
             <input id="wedstrijdId" type="hidden"/>
@@ -140,8 +140,9 @@
                         </td>
                     </tr>
                 </tbody>
-            </table>
-            <input id="vulWedstrijdIn" class = 'k-button' style="margin-top: 2em;" type="button" value="Indienen">
+            </table>            
+            <input id="vulWedstrijdIn" class = 'btn btn-success' style="margin-top: 2em;" type="button" value="Bevestigen">
+            <input id="keerTerug" class = 'btn btn-secondary' style="margin-top: 2em;" type="button" value="Annuleren" onclick="window.history.go(-1); return false;">
         </div>
     
         

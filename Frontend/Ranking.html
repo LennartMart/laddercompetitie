@@ -8,6 +8,7 @@
         <script src="http://kendo.cdn.telerik.com/2017.3.913/js/cultures/kendo.culture.nl-BE.min.js"></script>
         <script>
             jQuery( document ).ready(function() {
+                kendo.ui.progress(jQuery("body"), true);
                 kendo.culture("nl-BE");
                 var isGeautoriseerd = false;
                 var data;
@@ -26,6 +27,7 @@
                 ).then( function() {
                     if (data["success"]) {
                         var ranking = data["ranking"];
+                        kendo.ui.progress(jQuery("body"), false);
                         for(var i = 0; i < ranking.length; i++) {
                             var poule = ranking[i];
                             jQuery(".ranking").append("<h1>" + poule.naam + "</h1><div id='" + poule.id + "' > "+
@@ -113,15 +115,18 @@
                                     },
                                     {
                                         field: "punten_gewonnen",
-                                        title: "Punten+"
+                                        title: "Punten+",
+                                        minScreenWidth: 450
                                     },
                                     {
                                         field: "punten_verloren",
-                                        title: "Punten-"
+                                        title: "Punten-",
+                                        minScreenWidth: 450 
                                     },
                                     {
                                         field: "punten_saldo",
-                                        title: "Saldo"
+                                        title: "Saldo",
+                                        minScreenWidth: 450 
                                     },
                                     {
                                         field: "punten",
@@ -152,8 +157,8 @@
             }
         </style>
     </head>
-    <body>    
-    <div class="ranking">
+    <body style="min-height: 100%" >    
+    <div class="ranking" >
 
     </div>
     </body>

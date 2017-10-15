@@ -10,7 +10,7 @@
             case 'isGeautoriseerd':
                 $user = JFactory::getUser();
                 $authorisedViewLevels = $user->getAuthorisedViewLevels();
-                echo json_encode(in_array(5,$authorisedViewLevels));
+                echo json_encode(in_array(7,$authorisedViewLevels));
                 break;
             case 'viewCurrentRanking' :
                 $rondeManager = new RondeManager();

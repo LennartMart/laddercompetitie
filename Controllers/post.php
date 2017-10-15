@@ -8,18 +8,11 @@
 
     if(isset($_POST['action']) && !empty($_POST['action']))
     {
-        $user = JFactory::getUser();
-        $authorisedViewLevels = $user->getAuthorisedViewLevels();
-        if(!in_array(5,$authorisedViewLevels)){
-            $data["success"] = false;
-            $data["error"] = "Onvoldoende rechten!";
-            echo json_encode($data);
-            die;
-        }
         $action = $_POST['action'];
         switch ($action) {
             //Tested
             case "createRonde":
+                checkBeheerRechten();
                 if(isset($_POST['einddatum']) && !empty($_POST['einddatum'])
                 && isset($_POST['naam']) && !empty($_POST['naam']))
                 {
@@ -45,6 +38,7 @@
                 break;
             //Tested
             case "createPoule":
+                checkBeheerRechten();
                 if(isset($_POST['ronde_id']) && !empty($_POST['ronde_id'])
                 && isset($_POST['naam']) && !empty($_POST['naam']))
                 {
@@ -65,6 +59,7 @@
                 break;
             //Tested
             case "addSpelerToPoule":
+                checkBeheerRechten();
                 if(isset($_POST['speler_id']) && !empty($_POST['speler_id'])
                 && isset($_POST['poule_id']) && !empty($_POST['poule_id']))
                 {
@@ -84,6 +79,7 @@
                 echo json_encode($data);
                 break;
             case "generateWedstrijden":
+                checkBeheerRechten();
                 if(isset($_POST['ronde_id']) && !empty($_POST['ronde_id']))
                 {
                     $rondeManager = new rondeManager();
@@ -103,6 +99,7 @@
 
                 break;
             case "vulWedstrijdIn":
+                checkUserRechten();
                 if(isset($_POST['wedstrijd_id']) && !empty($_POST['wedstrijd_id'])
                 && isset($_POST['spelerThuis_set1']) && !empty($_POST['spelerThuis_set1'])
                 && isset($_POST['spelerThuis_set2']) && !empty($_POST['spelerThuis_set2'])
@@ -130,4 +127,26 @@
     {
         $d = DateTime::createFromFormat('Y-m-d', $date);
         return $d && $d->format('Y-m-d') === $date;
+    }
+
+    function checkBeheerRechten(){
+        $user = JFactory::getUser();
+        $authorisedViewLevels = $user->getAuthorisedViewLevels();
+        if(!in_array(6,$authorisedViewLevels)){
+            $data["success"] = false;
+            $data["error"] = "Onvoldoende rechten!";
+            echo json_encode($data);
+            die;
+        }
+    }
+
+    function checkUserRechten(){
+        $user = JFactory::getUser();
+        $authorisedViewLevels = $user->getAuthorisedViewLevels();
+        if(!in_array(7,$authorisedViewLevels)){
+            $data["success"] = false;
+            $data["error"] = "Onvoldoende rechten!";
+            echo json_encode($data);
+            die;
+        }
     }
