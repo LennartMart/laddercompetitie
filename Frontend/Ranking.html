@@ -10,154 +10,160 @@
             jQuery( document ).ready(function() {
                 kendo.ui.progress(jQuery("body"), true);
                 kendo.culture("nl-BE");
-                var isGeautoriseerd = false;
-                var data;
-                jQuery.when(
-                    jQuery.get("index.php?option=com_jumi&fileid=22&format=raw&action=isGeautoriseerd",
-                        function(data){
-                            isGeautoriseerd = data;
-                        },
-                        "json"),
                 
-                    jQuery.get("index.php?option=com_jumi&fileid=22&format=raw&action=viewCurrentRanking",
-                        function(response){
-                            data = response;
-                        },
-                        "json")
-                ).then( function() {
-                    if (data["success"]) {
-                        var ranking = data["ranking"];
-                        kendo.ui.progress(jQuery("body"), false);
-                        for(var i = 0; i < ranking.length; i++) {
-                            var poule = ranking[i];
-                            jQuery(".ranking").append("<h1>" + poule.naam + "</h1><div id='" + poule.id + "' > "+
-                            "<ul class='panel'><li>Wedstrijden<div class='wedstrijden'></div></ul><br/>  <div class='stand'></div></div>");
-                            
-                            jQuery(kendo.format(".ranking #{0} .panel .wedstrijden", poule.id)).kendoGrid({
-                                scrollable: false,
-                                dataSource: {
-                                    data: poule.wedstrijden,
-                                },
-                                columns: [
-                                    {
-                                        field: "spelerThuis_naam",
-                                        template: "#: spelerThuis_voornaam # #: spelerThuis_naam # (#: spelerThuis_handicap#)",
-                                        title: "&nbsp;"
-                                    },
-                                    {
-                                        field: "spelerUit_naam",
-                                        template: "#: spelerUit_voornaam # #: spelerUit_naam # (#: spelerUit_handicap#)",
-                                        title: "&nbsp;"
-                                    },
-                                    {
-                                        field: "spelerThuis_set1",
-                                        template: "# if (spelerThuis_set1 > 0) { # #:spelerThuis_set1 #-#:spelerUit_set1 # " +
-                                        "#:spelerThuis_set2 #-#:spelerUit_set2 # "+ 
-                                        "# if(spelerThuis_set3 > 0) { # #:spelerThuis_set3 #-#:spelerUit_set3 # # }  # " + "# } else {#  # } #",
-                                        title: "Uitslag"
-                                    },
-                                    {
-                                        field: "ingevuld_op",
-                                        template: "# if(ingevuld_op) { # #= kendo.toString(kendo.parseDate(ingevuld_op), 'dd-MM-yyyy')# # } #",
-                                        title: "Gespeeld op"
-                                    },
-                                    {
-                                        title: "&nbsp;",
-                                        template: "# if(ingevuld === '0' ){ # <a href='index.php?option=com_jumi&fileid=29&wedstrijd_id=#:id#'>Vul score in</a> # } #",
-                                        hidden: !isGeautoriseerd
-                                    }
-                                ]
-                            })
-
-                            jQuery(kendo.format(".ranking #{0} .stand", poule.id)).kendoGrid({
-                                scrollable: false,
-                                dataSource: {
-                                    data: poule.spelers,
-                                    schema: {
-                                        parse: function(response){
-                                            for(var i = 0; i < response.length; i++){
-                                                response[i].punten_saldo = response[i].punten_gewonnen - response[i].punten_verloren;
-                                            }
-                                            return response;
-                                        }
-                                    },
-                                    sort: [{
-                                        field: "punten",
-                                        dir: "desc"
-                                    },
-                                    {
-                                        field: "punten_saldo",
-                                        dir: "desc"
-                                    }
-                                    ]
-                                },
-                                columns: [
-                                    {
-                                        field: "naam",
-                                        template: "#: voornaam # #: naam #",
-                                        title: "&nbsp;",
-                                        width: "25%",
-                                        headerAttributes: {                                                
+                jQuery.get("index.php?option=com_jumi&fileid=22&format=raw&action=viewCurrentRanking",
+                    function(data){
+                        if (data["success"]) {
+                            jQuery("#isGeautoriseerd").val(data["isGeautoriseerd"]);
+                            var ranking = data["ranking"];
+                            kendo.ui.progress(jQuery("body"), false);
+                            for(var i = 0; i < ranking.length; i++) {
+                                var poule = ranking[i];
+                                jQuery(".ranking").append("<h1>" + poule.naam + "</h1><div id='" + poule.id + "' > "+
+                                "<ul class='panel'><li>Wedstrijden<div class='wedstrijden'></div></ul><br/>  <div class='stand'></div></div>");
+                                
+                                jQuery(kendo.format(".ranking #{0} .panel .wedstrijden", poule.id)).kendoGrid({
+                                    scrollable: false,
+                                    selectable: "row",
+                                    change: function(e){
+                                        var dataItem = this.dataItem(this.select());
+                                        if(jQuery("#isGeautoriseerd").val() == 'true' && dataItem.ingevuld == '0'){
                                             
+                                            window.location.href = '/index.php?option=com_jumi&fileid=29&wedstrijd_id=' + dataItem.id;
                                         }
                                     },
-                                    {
-                                        field: "matchen_gespeeld",
-                                        title: "#M"
+                                    dataSource: {
+                                        data: poule.wedstrijden,
                                     },
-                                    {
-                                        field: "matchen_gewonnen",
-                                        title: "M+"
-                                    },
-                                    {
-                                        field: "matchen_verloren",
-                                        title: "M-"
-                                    },
-                                    {
-                                        field: "punten_gewonnen",
-                                        title: "Punten+",
-                                        minScreenWidth: 450
-                                    },
-                                    {
-                                        field: "punten_verloren",
-                                        title: "Punten-",
-                                        minScreenWidth: 450 
-                                    },
-                                    {
-                                        field: "punten_saldo",
-                                        title: "Saldo",
-                                        minScreenWidth: 450 
-                                    },
-                                    {
-                                        field: "punten",
-                                        title: "Score"
-                                    },                                                                                                                       
-                                ]
+                                    columns: [
+                                        {
+                                            field: "spelerThuis_naam",
+                                            template: "#: spelerThuis_voornaam # #: spelerThuis_naam # (#: spelerThuis_handicap#)",
+                                            title: "&nbsp;"
+                                        },
+                                        {
+                                            field: "spelerUit_naam",
+                                            template: "#: spelerUit_voornaam # #: spelerUit_naam # (#: spelerUit_handicap#)",
+                                            title: "&nbsp;"
+                                        },
+                                        {
+                                            field: "spelerThuis_set1",
+                                            template: "# if (spelerThuis_set1 > 0) { # #:spelerThuis_set1 #-#:spelerUit_set1 # " +
+                                            "#:spelerThuis_set2 #-#:spelerUit_set2 # "+ 
+                                            "# if(spelerThuis_set3 > 0) { # #:spelerThuis_set3 #-#:spelerUit_set3 # # }  # " + "# } else {#  # } #",
+                                            title: "Uitslag"
+                                        },
+                                        {
+                                            field: "ingevuld_op",
+                                            template: "# if(ingevuld_op) { # #= kendo.toString(kendo.parseDate(ingevuld_op), 'dd-MM-yyyy')# # } #",
+                                            title: "Gespeeld op"
+                                        }
+                                    ]
+                                })
 
-                            });
+                                jQuery(kendo.format(".ranking #{0} .stand", poule.id)).kendoGrid({
+                                    scrollable: false,
+                                    dataSource: {
+                                        data: poule.spelers,
+                                        schema: {
+                                            parse: function(response){
+                                                for(var i = 0; i < response.length; i++){
+                                                    response[i].punten_saldo = response[i].punten_gewonnen - response[i].punten_verloren;
+                                                }
+                                                return response;
+                                            }
+                                        },
+                                        sort: [{
+                                            field: "punten",
+                                            dir: "desc"
+                                        },
+                                        {
+                                            field: "punten_saldo",
+                                            dir: "desc"
+                                        }
+                                        ]
+                                    },
+                                    columns: [
+                                        {
+                                            field: "naam",
+                                            template: "#: voornaam # #: naam #",
+                                            title: "&nbsp;",
+                                            width: "25%",
+                                            headerAttributes: {                                                
+                                                
+                                            }
+                                        },
+                                        {
+                                            field: "matchen_gespeeld",
+                                            title: "#M"
+                                        },
+                                        {
+                                            field: "matchen_gewonnen",
+                                            title: "M+"
+                                        },
+                                        {
+                                            field: "matchen_verloren",
+                                            title: "M-"
+                                        },
+                                        {
+                                            field: "punten_gewonnen",
+                                            title: "Punten+",
+                                            minScreenWidth: 450
+                                        },
+                                        {
+                                            field: "punten_verloren",
+                                            title: "Punten-",
+                                            minScreenWidth: 450 
+                                        },
+                                        {
+                                            field: "punten_saldo",
+                                            title: "Saldo",
+                                            minScreenWidth: 450 
+                                        },
+                                        {
+                                            field: "punten",
+                                            title: "Score"
+                                        },                                                                                                                       
+                                    ]
 
-                            jQuery(kendo.format(".ranking #{0} .panel", poule.id)).kendoPanelBar({
-                                animation: {
-                                    // fade-in and expand opening items over 500 milliseconds
-                                    expand: {
-                                        duration: 500,
-                                        effects: "expandVertical fadeIn"
+                                });
+
+                                jQuery(kendo.format(".ranking #{0} .panel", poule.id)).kendoPanelBar({
+                                    animation: {
+                                        // fade-in and expand opening items over 500 milliseconds
+                                        expand: {
+                                            duration: 500,
+                                            effects: "expandVertical fadeIn"
+                                        }
                                     }
-                                }
-                            });
+                                });
 
+                            }
                         }
-                    }
-                })
+                    },
+                    "json")
+
             });
         </script>
         <style>
-            .k-panelbar .k-header
-            {
+            .wedstrijden {
+                cursor: pointer;
+
+            }
+            div.k-grid .k-selectable tr.k-state-selected{
+                background-color: #ffffff !important;
+                color: #000000;
+            }
+            
+            div.k-grid .k-selectable tr.k-alt.k-state-selected {
+                background-color: #f1f1f1 !important;
+                color: #000000;
             }
         </style>
     </head>
     <body style="min-height: 100%" >    
+    <input id="isGeautoriseerd" type="hidden"/>
+            
     <div class="ranking" >
 
     </div>

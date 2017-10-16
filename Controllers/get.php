@@ -8,24 +8,25 @@
         $action = $_GET['action'];
         switch ($action) {
             case 'isGeautoriseerd':
-                $user = JFactory::getUser();
-                $authorisedViewLevels = $user->getAuthorisedViewLevels();
-                echo json_encode(in_array(7,$authorisedViewLevels));
+                echo json_encode(isGeautoriseerd());
                 break;
             case 'viewCurrentRanking' :
                 $rondeManager = new RondeManager();
-                $ranking = $rondeManager->getCurrentRanking();
+                $ranking = $rondeManager->getCurrentRanking();       
                 $data["success"] = true;
                 $data["ranking"] = $ranking;
+                $data["isGeautoriseerd"] = isGeautoriseerd();
+
                 echo json_encode($data);
                 break;
             case 'viewRanking' : 
                 if(isset($_GET['ronde_id']) && !empty($_GET['ronde_id']))
                 {
                     $rondeManager = new RondeManager();
-                    $ranking = $rondeManager->getRanking($_GET['ronde_id']);
+                    $ranking = $rondeManager->getRanking($_GET['ronde_id']);   
                     $data["success"] = true;
                     $data["ranking"] = $ranking;
+                    $data["isGeautoriseerd"] = isGeautoriseerd();
                     echo json_encode($data);
                 } else {
                     $data["success"] = false;
@@ -85,4 +86,10 @@
                 }
                 break;
         }
+    }
+
+    function isGeautoriseerd(){
+        $user = JFactory::getUser();
+        $authorisedViewLevels = $user->getAuthorisedViewLevels();
+        return in_array(7,$authorisedViewLevels);
     }
