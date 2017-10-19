@@ -60,7 +60,29 @@
                                         }
                                     ]
                                 })
-
+								jQuery(kendo.format(".ranking #{0} .panel .wedstrijden", poule.id)).kendoTooltip({
+									filter: "tr",
+									show: function(e){
+										if(this.content.text().length > 0){
+											this.content.parent().css("visibility", "visible");
+										}
+									},
+									position: "right",
+								    hide:function(e){
+										this.content.parent().css("visibility", "hidden");
+									},
+									content: function(e){
+									console.log(e);
+									console.log(e.target.closest(".wedstrijden"));
+										var dataItem = jQuery(e.target.closest(".wedstrijden")).data("kendoGrid").dataItem(e.target.closest("tr"));
+										var content = "";
+										console.log(dataItem);
+										if(dataItem.ingevuld == "1"){
+											content = kendo.format("Ingevuld door {0}", dataItem.ingevuld_door);
+										}
+										return content;
+									}
+								 }).data("kendoTooltip");
                                 jQuery(kendo.format(".ranking #{0} .stand", poule.id)).kendoGrid({
                                     scrollable: false,
                                     dataSource: {
