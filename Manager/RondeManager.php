@@ -149,7 +149,7 @@ class RondeManager {
                         $poule->spelers[$wedstrijd->spelerUit_id]->punten_verloren += $wedstrijd->spelerThuis_set2;
                         $poule->spelers[$wedstrijd->spelerUit_id]->punten_verloren += $wedstrijd->spelerThuis_set3;
 
-                        if($poule->spelers[$wedstrijd->spelerThuis_id]->punten > $poule->spelers[$wedstrijd->spelerUit_id]->punten){
+                        if($wedstrijd->spelerThuis_punten > $wedstrijd->spelerUit_punten){
                             $poule->spelers[$wedstrijd->spelerUit_id]->matchen_verloren++;
                             $poule->spelers[$wedstrijd->spelerThuis_id]->matchen_gewonnen++;
                         } else {
